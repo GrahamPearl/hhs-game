@@ -1,3 +1,20 @@
+const firebaseConfig = {
+    apiKey: "AIzaSyAtQurZfX_McwPEetml5itdOP607rDMCek",
+    authDomain: "hhs-games.firebaseapp.com",
+    projectId: "hhs-games",
+    storageBucket: "hhs-games.firebasestorage.app",
+    messagingSenderId: "791682352447",
+    appId: "1:791682352447:web:109bebcd96b1848eb9ff8a"
+};
+
+let db = null;
+try {
+    firebase.initializeApp(firebaseConfig);
+    db = firebase.firestore();
+} catch (e) {
+    console.warn("Firebase not available, using local scores only.", e);
+}
+
 let appSettings = {
     githubUsername: "HillcrestHigh",
     githubRepo: "hhs-maze-runner",
@@ -233,6 +250,10 @@ function goToScreen(screenId) {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     document.getElementById(screenId).classList.add('active');
     currentScreen = screenId;
+
+    // Reset button only visible while playing
+    document.getElementById('reset-btn').classList.toggle('visible', screenId === 'screen-game');
+
     if (screenId === 'screen-level-select') {
         renderPlayLevelSelect();
     } else if (screenId === 'screen-leaderboard') {
@@ -360,6 +381,32 @@ function quitGame() {
     if (timerInterval) clearInterval(timerInterval);
     if (patrolInterval) clearInterval(patrolInterval);
     window.removeEventListener('keydown', handleGameKeydown);
+    goToScreen('screen-menu');
+}
+
+function resetGame() {
+    // Stop everything
+    gameRunning = false;
+    if (timerInterval) clearInterval(timerInterval);
+    if (patrolInterval) clearInterval(patrolInterval);
+    window.removeEventListener('keydown', handleGameKeydown);
+
+    // Close any open dialogue / interact prompt
+    document.getElementById('dialogue-modal').classList.remove('active');
+    document.getElementById('interact-btn').style.display = 'none';
+
+    // Reset positions and run state (high scores are untouched)
+    playerX = 1;
+    playerY = 1;
+    prideScore = 0;
+    minusScore = 0;
+    gameTimer = 0;
+    activeEntities = [];
+    currentMapGrid = [];
+    currentPersonas = {};
+    updateHudScore();
+    updateTimerDisplay();
+
     goToScreen('screen-menu');
 }
 
@@ -669,25 +716,59 @@ function endGame(victory, message) {
     goToScreen('screen-victory');
 }
 
-function saveHighScore(name, char, pride, total) {
-    let scores = [];
+function escapeHtml(str) {
+    return String(str).replace(/[&<>"']/g, ch => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    }[ch]));
+}
+
+function getLocalScores() {
     try {
-        scores = JSON.parse(localStorage.getItem('hhs_high_scores') || '[]');
-    } catch (e) { }
+        return JSON.parse(localStorage.getItem('hhs_high_scores') || '[]');
+    } catch (e) {
+        return [];
+    }
+}
+
+function saveHighScore(name, char, pride, total) {
+    // Local backup
+    let scores = getLocalScores();
     scores.push({ name, char, pride, total, date: new Date().toLocaleDateString() });
     scores.sort((a, b) => b.total - a.total);
     if (scores.length > 15) scores = scores.slice(0, 15);
     localStorage.setItem('hhs_high_scores', JSON.stringify(scores));
+
+    // Online leaderboard
+    if (db) {
+        db.collection('scores').add({
+            name: String(name).slice(0, 40),
+            char: String(char),
+            pride: pride,
+            total: total,
+            date: new Date().toLocaleDateString(),
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        }).catch(err => console.error("Could not save online score:", err));
+    }
 }
 
-function renderLeaderboardTable() {
+async function renderLeaderboardTable() {
     const tbody = document.getElementById('leaderboard-tbody');
-    tbody.innerHTML = '';
-    let scores = [];
-    try {
-        scores = JSON.parse(localStorage.getItem('hhs_high_scores') || '[]');
-    } catch (e) { }
+    tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: #94a3b8;">Loading scores...</td></tr>`;
 
+    let scores = [];
+    if (db) {
+        try {
+            const snap = await db.collection('scores').orderBy('total', 'desc').limit(15).get();
+            scores = snap.docs.map(d => d.data());
+        } catch (e) {
+            console.error("Could not load online scores:", e);
+            scores = getLocalScores();
+        }
+    } else {
+        scores = getLocalScores();
+    }
+
+    tbody.innerHTML = '';
     if (scores.length === 0) {
         tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: #94a3b8;">No scores recorded yet. Play a level!</td></tr>`;
         return;
@@ -697,8 +778,8 @@ function renderLeaderboardTable() {
         const tr = document.createElement('tr');
         tr.innerHTML = `
             <td>#${idx + 1}</td>
-            <td>${s.name}</td>
-            <td>${s.char}</td>
+            <td>${escapeHtml(s.name)}</td>
+            <td>${escapeHtml(s.char)}</td>
             <td style="color: #4ade80;">${s.pride}</td>
             <td style="color: #38bdf8; font-weight: bold;">${s.total}</td>
         `;
@@ -1087,29 +1168,29 @@ function exportLevelJSON() {
             document.body.appendChild(dlAnchor);
             dlAnchor.click();
             dlAnchor.remove();
-        }
+}
 
-        function importLevelJSON(e) {
-            const file = e.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = function (evt) {
-                try {
-                    const lvl = JSON.parse(evt.target.result);
-                    document.getElementById('edit-level-name').value = lvl.name || "Imported Route";
-                    document.getElementById('edit-level-desc').value = lvl.description || "";
-                    document.getElementById('edit-level-time').value = lvl.timeLimit || 90;
-                    document.getElementById('edit-patrol-speed').value = lvl.patrolSpeed !== undefined ? lvl.patrolSpeed : 1.0;
-                    editorCols = lvl.cols || 30;
-                    editorRows = lvl.rows || 10;
-                    document.getElementById('edit-grid-size').value = editorCols;
-                    editorGrid = lvl.grid;
-                    editorPersonas = lvl.personas || {};
-                    drawEditorCanvas();
-                    showMessageBox("Level JSON imported successfully!");
-                } catch (err) {
-                    showMessageBox("Error parsing level JSON file.");
-                }
-            };
-            reader.readAsText(file);
+function importLevelJSON(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function (evt) {
+        try {
+            const lvl = JSON.parse(evt.target.result);
+            document.getElementById('edit-level-name').value = lvl.name || "Imported Route";
+            document.getElementById('edit-level-desc').value = lvl.description || "";
+            document.getElementById('edit-level-time').value = lvl.timeLimit || 90;
+            document.getElementById('edit-patrol-speed').value = lvl.patrolSpeed !== undefined ? lvl.patrolSpeed : 1.0;
+            editorCols = lvl.cols || 30;
+            editorRows = lvl.rows || 10;
+            document.getElementById('edit-grid-size').value = editorCols;
+            editorGrid = lvl.grid;
+            editorPersonas = lvl.personas || {};
+            drawEditorCanvas();
+            showMessageBox("Level JSON imported successfully!");
+        } catch (err) {
+            showMessageBox("Error parsing level JSON file.");
         }
+    };
+    reader.readAsText(file);
+}
