@@ -8,5 +8,26 @@
     "teacher1.png",
     "teacher2.jpg",
     "slt_member.webp"
+  ],
+  "teacherFiles": [
+    "HB.webp",
+    "Teachers/mrs_knight_principal.jpg",
+    "Teachers/mr_ndebele_deputy_principal.JPG",
+    "Teachers/sibongiseni_ndebele_deputy_principal.JPG",
+    "Teachers/mr_joseph_it.JPG",
+    "Teachers/mr_moore_history.JPG",
+    "Teachers/mrs_ramsern_geography.JPG",
+    "Teachers/ms_zulu_commerce.JPG",
+    "Teachers/Woodrow.JPG",
+    "Teachers/grade_controllers_1.JPG",
+    "Teachers/teachers.JPG"
+  ],
+  "sltFiles": [
+    "SLT/isabella_te_brugge_deputy_head.JPG",
+    "SLT/jorja_pretorius_head_girl.JPG",
+    "SLT/luke_whittle_head_boy.JPG",
+    "SLT/rylan-leask_deputy_head_boy.JPG",
+    "SLT/tamuka_chovuchovu_deputy_head_boy.JPG",
+    "SLT/ziyanda_mabhida_deputy_head_girl.JPG"
   ]
 }

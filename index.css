@@ -1,3 +1,4 @@
+/* Existing root and base styles from index.css[cite: 1] */
 :root {
     --primary: #1b365d;
     --secondary: #008080;
@@ -61,7 +62,6 @@ header p {
     display: block;
 }
 
-/* Menu & Buttons */
 .btn {
     background: #0284c7;
     color: #fff;
@@ -80,37 +80,14 @@ header p {
     transform: translateY(-2px);
 }
 
-.btn-success {
-    background: #16a34a;
-}
-
-.btn-success:hover {
-    background: #15803d;
-}
-
-.btn-danger {
-    background: #dc2626;
-}
-
-.btn-danger:hover {
-    background: #b91c1c;
-}
-
-.btn-warning {
-    background: #d97706;
-}
-
-.btn-warning:hover {
-    background: #b45309;
-}
-
-.btn-purple {
-    background: #9333ea;
-}
-
-.btn-purple:hover {
-    background: #7e22ce;
-}
+.btn-success { background: #16a34a; }
+.btn-success:hover { background: #15803d; }
+.btn-danger { background: #dc2626; }
+.btn-danger:hover { background: #b91c1c; }
+.btn-warning { background: #d97706; }
+.btn-warning:hover { background: #b45309; }
+.btn-purple { background: #9333ea; }
+.btn-purple:hover { background: #7e22ce; }
 
 .menu-grid {
     display: grid;
@@ -140,47 +117,6 @@ header p {
     box-shadow: 0 0 15px rgba(56, 189, 248, 0.4);
 }
 
-/* Photo Selector Cards */
-.photo-card {
-    position: relative;
-    width: 70px;
-    height: 85px;
-    border-radius: 8px;
-    border: 2px solid #334155;
-    background: #0f172a;
-    cursor: pointer;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    transition: 0.2s;
-}
-
-.photo-card img {
-    width: 100%;
-    height: 60px;
-    object-fit: cover;
-}
-
-.photo-card span {
-    font-size: 0.65rem;
-    color: #94a3b8;
-    width: 100%;
-    text-align: center;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    padding: 2px;
-}
-
-.photo-card.selected {
-    border-color: #38bdf8;
-    box-shadow: 0 0 10px rgba(56, 189, 248, 0.6);
-    transform: scale(1.05);
-}
-
-/* Game Layout */
 .game-hud {
     display: flex;
     justify-content: space-between;
@@ -220,7 +156,6 @@ canvas {
     height: auto;
 }
 
-/* Editor Layout */
 .editor-layout {
     display: grid;
     grid-template-columns: 260px 1fr;
@@ -293,7 +228,6 @@ canvas {
     font-size: 0.9rem;
 }
 
-/* Modal Overlays */
 .modal-overlay {
     position: fixed;
     top: 0;
@@ -324,60 +258,20 @@ canvas {
     overflow-y: auto;
 }
 
-.dialogue-header {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    margin-bottom: 15px;
-    border-bottom: 1px solid #334155;
-    padding-bottom: 15px;
-}
-
-.dialogue-speech {
-    background: #0f172a;
-    border: 1px solid #334155;
-    border-radius: 8px;
-    padding: 12px;
-    margin-bottom: 15px;
-    font-size: 0.95rem;
-    line-height: 1.4;
-}
-
-.dialogue-option {
-    width: 100%;
-    text-align: left;
-    padding: 10px 15px;
-    margin-bottom: 8px;
-    background: #334155;
-    border: none;
-    border-radius: 6px;
-    color: #fff;
-    cursor: pointer;
-    transition: 0.2s;
-    font-size: 0.9rem;
-}
-
-.dialogue-option:hover {
-    background: #0284c7;
-}
-
 table {
     width: 100%;
     border-collapse: collapse;
     margin-top: 10px;
 }
 
-th,
-td {
+th, td {
     padding: 10px;
     text-align: left;
     border-bottom: 1px solid #334155;
     font-size: 0.9rem;
 }
 
-th {
-    color: #38bdf8;
-}
+th { color: #38bdf8; }
 
 .flex-row {
     display: flex;
@@ -390,12 +284,13 @@ th {
     justify-content: space-between;
     align-items: center;
 }
+
 .reset-btn {
     display: none;
     position: fixed;
     top: 15px;
     right: 15px;
-    z-index: 900; /* above the page, below the dialogue/name modals (1000) */
+    z-index: 900;
     background: #dc2626;
     color: #fff;
     border: none;
@@ -408,11 +303,131 @@ th {
     transition: 0.2s;
 }
 
-.reset-btn:hover {
-    background: #b91c1c;
-    transform: translateY(-2px);
+.reset-btn.visible { display: block; }
+
+/* Special item popup notification banner */
+#special-popup {
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%) scale(0.8);
+    background: rgba(56, 189, 248, 0.95);
+    color: #0f172a;
+    padding: 10px 20px;
+    border-radius: 30px;
+    font-weight: bold;
+    font-size: 1.1rem;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+    z-index: 500;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.2s ease-in-out;
+}
+#special-popup.show {
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
 }
 
-.reset-btn.visible {
-    display: block;
+/* ===== Teacher / SLT dialogue modal ===== */
+.dialogue-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 15px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #334155;
 }
+
+.dialogue-header h3 {
+    color: #38bdf8;
+    font-size: 1.15rem;
+}
+
+.dialogue-speech {
+    background: #0f172a;
+    border-left: 4px solid #38bdf8;
+    border-radius: 8px;
+    padding: 14px 16px;
+    font-size: 1rem;
+    line-height: 1.5;
+    font-style: italic;
+    margin-bottom: 15px;
+}
+
+#dlg-options-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.dialogue-option {
+    width: 100%;
+    text-align: left;
+    background: #0f172a;
+    color: #e2e8f0;
+    border: 1px solid #334155;
+    border-left: 4px solid #334155;
+    border-radius: 8px;
+    padding: 12px 14px;
+    font-size: 0.95rem;
+    line-height: 1.4;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.dialogue-option:hover {
+    background: #172554;
+    border-color: #38bdf8;
+    transform: translateX(4px);
+}
+
+.dialogue-option.positive { border-left-color: #16a34a; }
+.dialogue-option.positive b { color: #4ade80; }
+.dialogue-option.negative { border-left-color: #dc2626; }
+.dialogue-option.negative b { color: #f87171; }
+
+/* ===== Staff photo gallery in persona editor ===== */
+.photo-card {
+    width: 84px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 6px;
+    background: #1e293b;
+    border: 2px solid transparent;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.photo-card:hover { border-color: #38bdf8; }
+
+.photo-card.selected {
+    border-color: #38bdf8;
+    background: #1e3a8a;
+}
+
+.photo-card img {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.photo-card span {
+    font-size: 0.6rem;
+    color: #94a3b8;
+    word-break: break-all;
+    text-align: center;
+}
+
+
+
+
+
+
+
+
+
+

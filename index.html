@@ -38,15 +38,20 @@
                     <h3>Rugby Player</h3>
                     <p style="font-size: 0.8rem; color: #94a3b8;">HHS Rugby Kit</p>
                 </div>
-                <div class="card selected" onclick="selectCharacter('soccer', this)">
+                <div class="card" onclick="selectCharacter('soccer', this)">
                     <div style="font-size: 3rem;">⚽</div>
-                    <h3>Rugby Player</h3>
-                    <p style="font-size: 0.8rem; color: #94a3b8;">HHS Rugby Kit</p>
+                    <h3>Soccer Player</h3>
+                    <p style="font-size: 0.8rem; color: #94a3b8;">HHS Soccer Kit</p>
                 </div>
                 <div class="card" onclick="selectCharacter('netball', this)">
                     <div style="font-size: 3rem;">🏐</div>
                     <h3>Netball Player</h3>
                     <p style="font-size: 0.8rem; color: #94a3b8;">HHS Netball Kit</p>
+                </div>
+                <div class="card" onclick="selectCharacter('library', this)">
+                    <div style="font-size: 3rem;">📚</div>
+                    <h3>Library Assistant</h3>
+                    <p style="font-size: 0.8rem; color: #94a3b8;">Library Specialist</p>
                 </div>
                 <div class="card" onclick="selectCharacter('drama', this)">
                     <div style="font-size: 3rem;">🎤</div>
@@ -81,53 +86,31 @@
                 <div class="hud-item">⭐ Pride Points: <span id="hud-score" style="color: #4ade80;">0</span></div>
                 <div class="hud-item">⏱️ Time: <span id="hud-time">00:00</span></div>
                 <div class="hud-item" style="font-size: 0.85rem; color: #cbd5e1;">Patrol Speed: <span id="hud-patrol-speed" style="color: #38bdf8;">1.0s</span></div>
-                <button class="btn btn-danger" style="padding: 4px 10px; font-size: 0.8rem;"
-                    onclick="quitGame()">Quit</button>
+                <button class="btn btn-danger" style="padding: 4px 10px; font-size: 0.8rem;" onclick="quitGame()">Quit</button>
             </div>
             <div class="canvas-container">
+                <div id="special-popup">⭐ Special Item!</div>
                 <canvas id="gameCanvas" width="800" height="500"></canvas>
             </div>
             <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px; flex-wrap: wrap; gap: 8px;">
                 <p style="font-size: 0.85rem; color: #94a3b8;">Use <b>Arrow Keys</b> or <b>WASD</b> to walk. Teachers roam the maze and trigger chat on overlap!</p>
-                <button class="btn btn-warning" id="interact-btn" onclick="triggerInteraction()"
-                    style="display: none;">Interact (SPACE)</button>
+                <button class="btn btn-warning" id="interact-btn" onclick="triggerInteraction()" style="display: none;">Interact (SPACE)</button>
             </div>
         </div>
 
         <!-- SCREEN 5: GAME OVER / VICTORY -->
         <div id="screen-victory" class="screen">
-            <h2 id="victory-title" style="text-align: center; color: #4ade80; margin-bottom: 10px;">Level Completed!
-            </h2>
-            <p id="victory-subtitle" style="text-align: center; color: #94a3b8; margin-bottom: 20px;">You reached the
-                HHS Kingfisher mascot flag.</p>
-            <div
-                style="background: #0f172a; padding: 15px; border-radius: 8px; border: 1px solid #334155; margin-bottom: 20px;">
+            <h2 id="victory-title" style="text-align: center; color: #4ade80; margin-bottom: 10px;">Level Completed!</h2>
+            <p id="victory-subtitle" style="text-align: center; color: #94a3b8; margin-bottom: 20px;">You reached the HHS Kingfisher mascot flag.</p>
+            <div style="background: #0f172a; padding: 15px; border-radius: 8px; border: 1px solid #334155; margin-bottom: 20px;">
                 <h3>Score Breakdown:</h3>
                 <table>
-                    <tr>
-                        <td>Learner Name:</td>
-                        <td id="res-name">-</td>
-                    </tr>
-                    <tr>
-                        <td>Character:</td>
-                        <td id="res-char">-</td>
-                    </tr>
-                    <tr>
-                        <td>Pride Points (Actions & Greetings):</td>
-                        <td id="res-pride" style="color: #4ade80;">0</td>
-                    </tr>
-                    <tr>
-                        <td>Minus Points (Infractions):</td>
-                        <td id="res-minus" style="color: #f87171;">0</td>
-                    </tr>
-                    <tr>
-                        <td>Time Bonus:</td>
-                        <td id="res-time">0</td>
-                    </tr>
-                    <tr>
-                        <th style="font-size: 1.1rem;">Final Score:</th>
-                        <th id="res-total" style="font-size: 1.1rem; color: #38bdf8;">0</th>
-                    </tr>
+                    <tr><td>Learner Name:</td><td id="res-name">-</td></tr>
+                    <tr><td>Character:</td><td id="res-char">-</td></tr>
+                    <tr><td>Pride Points (Actions & Greetings):</td><td id="res-pride" style="color: #4ade80;">0</td></tr>
+                    <tr><td>Minus Points (Infractions):</td><td id="res-minus" style="color: #f87171;">0</td></tr>
+                    <tr><td>Time Bonus:</td><td id="res-time">0</td></tr>
+                    <tr><th style="font-size: 1.1rem;">Final Score:</th><th id="res-total" style="font-size: 1.1rem; color: #38bdf8;">0</th></tr>
                 </table>
             </div>
             <div style="text-align: center;">
@@ -142,15 +125,14 @@
                 <div class="flex-row" style="flex-wrap: wrap;">
                     <button class="btn btn-success" onclick="saveCurrentLevel()">💾 Save Level</button>
                     <button class="btn btn-warning" onclick="exportLevelJSON()">📤 Export JSON</button>
-                    <label class="btn" style="cursor: pointer; margin:0;">📥 Import <input type="file" id="importFile"
-                            style="display: none;" onchange="importLevelJSON(event)"></label>
+                    <button class="btn btn-purple" onclick="exportLevelAsStarterCode()">📋 Export Starter Code</button>
+                    <label class="btn" style="cursor: pointer; margin:0;">📥 Import <input type="file" id="importFile" style="display: none;" onchange="importLevelJSON(event)"></label>
                     <button class="btn btn-danger" onclick="goToScreen('screen-menu')">Exit</button>
                 </div>
             </div>
 
             <!-- Level Selector & Meta -->
-            <div
-                style="background: #0f172a; padding: 12px; border-radius: 8px; border: 1px solid #334155; margin-bottom: 15px; display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; align-items: end;">
+            <div style="background: #0f172a; padding: 12px; border-radius: 8px; border: 1px solid #334155; margin-bottom: 15px; display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; align-items: end;">
                 <div class="form-group" style="margin:0;">
                     <label>Select Level to Edit</label>
                     <select id="editor-level-select" class="form-control" onchange="loadLevelIntoEditor(this.value)">
@@ -173,6 +155,10 @@
                     <label>Teacher Patrol Interval (s)</label>
                     <input type="number" step="0.1" min="0.2" max="5.0" id="edit-patrol-speed" class="form-control" value="1.0">
                 </div>
+                <div class="form-group" style="margin:0;">
+                    <label>Player Speed Boost / Advantage Multiplier</label>
+                    <input type="number" step="0.1" min="0.5" max="3.0" id="edit-speed-advantage" class="form-control" value="1.0">
+                </div>
             </div>
 
             <div class="editor-layout">
@@ -189,19 +175,14 @@
                             <option value="30" selected>30 x 10</option>
                         </select>
                     </div>
-                    <button class="btn btn-warning" style="width:100%; margin-top:10px;" onclick="clearMapGrid()">Clear
-                        Map</button>
+                    <button class="btn btn-warning" style="width:100%; margin-top:10px;" onclick="clearMapGrid()">Clear Map</button>
                 </div>
 
-                <div
-                    style="background: #0f172a; padding: 15px; border-radius: 8px; border: 1px solid #334155; display: flex; flex-direction: column; align-items: center;">
+                <div style="background: #0f172a; padding: 15px; border-radius: 8px; border: 1px solid #334155; display: flex; flex-direction: column; align-items: center;">
                     <div style="position: relative; width: 100%; overflow-x: auto;" tabindex="0" id="editor-canvas-wrapper">
-                        <canvas id="editorCanvas" width="750" height="300"
-                            style="border: 2px solid #334155; cursor: crosshair; display: block; margin: 0 auto;" onclick="canvasClick(event)"></canvas>
+                        <canvas id="editorCanvas" width="750" height="300" style="border: 2px solid #334155; cursor: crosshair; display: block; margin: 0 auto;" onclick="canvasClick(event)"></canvas>
                     </div>
-                    <p style="font-size: 0.8rem; color: #94a3b8; margin-top: 10px; text-align: center;">Click grid to
-                        place tile. Click placed <b>Teacher / SLT</b> or press <b>SPACE</b> on tile to edit Persona &
-                        Dialogue.</p>
+                    <p style="font-size: 0.8rem; color: #94a3b8; margin-top: 10px; text-align: center;">Click grid to place tile. Click placed <b>Teacher / SLT</b> or press <b>SPACE</b> on tile to edit Persona & Dialogue.</p>
                 </div>
             </div>
         </div>
@@ -221,10 +202,7 @@
                         </tr>
                     </thead>
                     <tbody id="leaderboard-tbody">
-                        <tr>
-                            <td colspan="5" style="text-align: center; color: #94a3b8;">No scores recorded yet. Play a
-                                level!</td>
-                        </tr>
+                        <tr><td colspan="5" style="text-align: center; color: #94a3b8;">No scores recorded yet. Play a level!</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -246,13 +224,9 @@
 
             <div class="form-group">
                 <label>Select Staff Photo (GitHub Hosted)</label>
-                <div style="display: flex; gap: 8px; flex-wrap: wrap; max-height: 140px; overflow-y: auto; background: #0f172a; padding: 10px; border-radius: 8px; border: 1px solid #334155; margin-bottom: 8px;"
-                    id="p-photo-gallery">
-                    <!-- Dynamic staff photos loaded from GitHub Settings -->
-                </div>
+                <div style="display: flex; gap: 8px; flex-wrap: wrap; max-height: 140px; overflow-y: auto; background: #0f172a; padding: 10px; border-radius: 8px; border: 1px solid #334155; margin-bottom: 8px;" id="p-photo-gallery"></div>
                 <div class="flex-row">
-                    <input type="text" id="p-custom-filename" class="form-control" placeholder="Filename e.g. HB.webp"
-                        oninput="previewCustomPhoto(this.value)">
+                    <input type="text" id="p-custom-filename" class="form-control" placeholder="Filename e.g. HB.webp" oninput="previewCustomPhoto(this.value)">
                     <span style="font-size:0.75rem; color:#94a3b8; white-space:nowrap;">Custom Filename</span>
                 </div>
             </div>
@@ -260,28 +234,21 @@
             <div class="form-group">
                 <label>Fallback Emoji / Sprite (If no photo)</label>
                 <div class="flex-row" style="gap: 10px;" id="p-portrait-list">
-                    <div class="card selected" style="padding: 5px; width: 50px; height: 50px;"
-                        onclick="selectPortrait('👨‍🏫', this)">👨‍🏫</div>
-                    <div class="card" style="padding: 5px; width: 50px; height: 50px;"
-                        onclick="selectPortrait('👩‍🏫', this)">👩‍🏫</div>
-                    <div class="card" style="padding: 5px; width: 50px; height: 50px;" onclick="selectPortrait('👔', this)">
-                        👔</div>
-                    <div class="card" style="padding: 5px; width: 50px; height: 50px;"
-                        onclick="selectPortrait('👮‍♂️', this)">👮‍♂️</div>
+                    <div class="card selected" style="padding: 5px; width: 50px; height: 50px;" onclick="selectPortrait('👨‍🏫', this)">👨‍🏫</div>
+                    <div class="card" style="padding: 5px; width: 50px; height: 50px;" onclick="selectPortrait('👩‍🏫', this)">👩‍🏫</div>
+                    <div class="card" style="padding: 5px; width: 50px; height: 50px;" onclick="selectPortrait('👔', this)">👔</div>
+                    <div class="card" style="padding: 5px; width: 50px; height: 50px;" onclick="selectPortrait('👮‍♂️', this)">👮‍♂️</div>
                 </div>
             </div>
 
             <div class="form-group">
                 <label>Greeting / Dialogue Prompt</label>
-                <textarea id="p-prompt" class="form-control"
-                    rows="2">Good morning! Why are you rushing down this corridor?</textarea>
+                <textarea id="p-prompt" class="form-control" rows="2">Good morning! Why are you rushing down this corridor?</textarea>
             </div>
 
-            <h4 style="font-size: 0.9rem; margin: 15px 0 8px 0; color: #38bdf8;">Response Options & Point Allocations
-            </h4>
+            <h4 style="font-size: 0.9rem; margin: 15px 0 8px 0; color: #38bdf8;">Response Options & Point Allocations</h4>
             <div id="p-responses-container"></div>
-            <button class="btn" style="font-size: 0.8rem; margin-top: 5px;" onclick="addResponseOption()">+ Add Response
-                Option</button>
+            <button class="btn" style="font-size: 0.8rem; margin-top: 5px;" onclick="addResponseOption()">+ Add Response Option</button>
 
             <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
                 <button class="btn btn-danger" onclick="closePersonaModal()">Cancel</button>
@@ -294,17 +261,15 @@
     <div id="settings-modal" class="modal-overlay">
         <div class="modal-content">
             <h3 style="margin-bottom: 15px; color: #38bdf8;">⚙️ GitHub & Staff Photo Settings</h3>
-            <p style="font-size: 0.85rem; color: #94a3b8; margin-bottom: 15px;">Configure your GitHub repo to host SLT &
-                Staff photo files (e.g. <code>HB.webp</code>). These settings are stored locally and exportable as
-                <code>settings.json</code>.</p>
+            <p style="font-size: 0.85rem; color: #94a3b8; margin-bottom: 15px;">Configure your GitHub repo to host SLT & Staff photo files. Linked with <code>teachers.json</code>.</p>
 
             <div class="form-group">
                 <label>GitHub Username / Org</label>
-                <input type="text" id="cfg-username" class="form-control" value="HillcrestHigh">
+                <input type="text" id="cfg-username" class="form-control" value="grahampearl">
             </div>
             <div class="form-group">
                 <label>Repository Name</label>
-                <input type="text" id="cfg-repo" class="form-control" value="hhs-maze-runner">
+                <input type="text" id="cfg-repo" class="form-control" value="hhs-game">
             </div>
             <div class="form-group">
                 <label>Branch</label>
@@ -316,27 +281,21 @@
             </div>
             <div class="form-group">
                 <label>Configured Staff Photos (Comma-Separated Filenames)</label>
-                <input type="text" id="cfg-files" class="form-control"
-                    value="HB.webp, teacher1.png, teacher2.jpg, slt_member.webp">
+                <input type="text" id="cfg-files" class="form-control" value="HB.webp, teacher1.png, teacher2.jpg, slt_member.webp">
             </div>
 
-            <div
-                style="background: #0f172a; padding: 10px; border-radius: 6px; border: 1px solid #334155; margin-bottom: 15px;">
-                <span style="font-size: 0.75rem; color: #38bdf8; word-break: break-all;">Raw URL Preview:<br><code
-                        id="cfg-url-preview">https://raw.githubusercontent.com/...</code></span>
+            <div style="background: #0f172a; padding: 10px; border-radius: 6px; border: 1px solid #334155; margin-bottom: 15px;">
+                <span style="font-size: 0.75rem; color: #38bdf8; word-break: break-all;">Raw URL Preview:<br><code id="cfg-url-preview">https://raw.githubusercontent.com/...</code></span>
             </div>
 
             <div class="flex-between" style="gap: 10px; flex-wrap: wrap;">
                 <div class="flex-row">
-                    <button class="btn btn-warning" style="font-size:0.85rem;" onclick="exportSettingsJSON()">📤 Export
-                        settings.json</button>
-                    <label class="btn" style="font-size:0.85rem; cursor: pointer; margin:0;">📥 Load <input type="file"
-                            id="settingsImportFile" style="display: none;" onchange="importSettingsJSON(event)"></label>
+                    <button class="btn btn-warning" style="font-size:0.85rem;" onclick="exportSettingsJSON()">📤 Export settings.json</button>
+                    <label class="btn" style="font-size:0.85rem; cursor: pointer; margin:0;">📥 Load <input type="file" id="settingsImportFile" style="display: none;" onchange="importSettingsJSON(event)"></label>
                 </div>
                 <div class="flex-row">
                     <button class="btn btn-danger" style="font-size:0.85rem;" onclick="closeSettingsModal()">Cancel</button>
-                    <button class="btn btn-success" style="font-size:0.85rem;" onclick="saveSettingsConfig()">Save
-                        Settings</button>
+                    <button class="btn btn-success" style="font-size:0.85rem;" onclick="saveSettingsConfig()">Save Settings</button>
                 </div>
             </div>
         </div>
@@ -346,8 +305,7 @@
     <div id="dialogue-modal" class="modal-overlay">
         <div class="modal-content">
             <div class="dialogue-header">
-                <div id="dlg-avatar-container"
-                    style="width: 70px; height: 70px; border-radius: 50%; overflow: hidden; border: 2px solid #38bdf8; display: flex; align-items: center; justify-content: center; background: #0f172a; flex-shrink: 0;">
+                <div id="dlg-avatar-container" style="width: 70px; height: 70px; border-radius: 50%; overflow: hidden; border: 2px solid #38bdf8; display: flex; align-items: center; justify-content: center; background: #0f172a; flex-shrink: 0;">
                     <div id="dlg-avatar" style="font-size: 3rem;">👨‍🏫</div>
                 </div>
                 <div>
@@ -355,9 +313,7 @@
                     <p style="font-size: 0.8rem; color: #94a3b8;">Hillcrest High School Staff Interaction</p>
                 </div>
             </div>
-            <div class="dialogue-speech" id="dlg-speech">
-                Greeting prompt text here...
-            </div>
+            <div class="dialogue-speech" id="dlg-speech">Greeting prompt text here...</div>
             <div id="dlg-options-container"></div>
         </div>
     </div>
@@ -370,13 +326,14 @@
                 <label>Learner Name</label>
                 <input type="text" id="player-name-input" class="form-control" value="Alex Smith (Grade 10)">
             </div>
-            <button class="btn btn-success" style="width: 100%; margin-top: 10px;" onclick="confirmPlayerName()">Start
-                Game</button>
+            <button class="btn btn-success" style="width: 100%; margin-top: 10px;" onclick="confirmPlayerName()">Start Game</button>
         </div>
     </div>
+
     <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
     <script src="index.js"></script>
+    <script src="features.js"></script>
 </body>
 
 </html>

@@ -16,11 +16,24 @@ try {
 }
 
 let appSettings = {
-    githubUsername: "HillcrestHigh",
-    githubRepo: "hhs-maze-runner",
+    githubUsername: "grahampearl",
+    githubRepo: "hhs-game",
     branch: "main",
     photosFolder: "staff-photos",
-    staffFiles: ["HB.webp", "teacher1.png", "teacher2.jpg", "slt_member.webp"]
+    staffFiles: [
+        "HB.webp",
+        "teacher1.png",
+        "teacher2.jpg",
+        "slt_member.webp"
+    ]
+};
+
+// Teacher name to filepath mapping (linked with teachers.json)
+let teacherPathMapping = {
+    "Mr. van der Merwe": "staff-photos/HB.webp",
+    "Mrs. Dube (SLT)": "staff-photos/teacher1.png",
+    "Mr. Pillay": "staff-photos/teacher2.jpg",
+    "SLT Member": "staff-photos/slt_member.webp"
 };
 
 const imageCache = {};
@@ -30,8 +43,9 @@ function getGitHubRawUrl(filename) {
     if (filename.startsWith('data:') || filename.startsWith('http://') || filename.startsWith('https://')) {
         return filename;
     }
+    const cleanPath = filename.replace(/^staff-photos\//, '');
     const folder = appSettings.photosFolder ? `${appSettings.photosFolder.replace(/\/$/, '')}/` : '';
-    return `https://raw.githubusercontent.com/${appSettings.githubUsername}/${appSettings.githubRepo}/${appSettings.branch}/${folder}${filename}`;
+    return `https://raw.githubusercontent.com/${appSettings.githubUsername}/${appSettings.githubRepo}/${appSettings.branch}/${folder}${encodeURI(cleanPath)}`;
 }
 
 function getOrLoadImage(filename) {
@@ -192,6 +206,7 @@ let defaultLevels = [
         cols: 20,
         rows: 12,
         patrolSpeed: 1.0,
+        speedAdvantage: 1.0,
         grid: [
             [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
             [1, 2, 0, 0, 6, 0, 0, 1, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 8, 1],
@@ -229,7 +244,7 @@ function loadLevels() {
 loadLevels();
 
 let currentScreen = 'screen-menu';
-let selectedCharacter = { id: 'rugby', name: 'Rugby Player', icon: '🏉' };
+let selectedCharacter = { id: 'rugby', name: 'Rugby Player', icon: '🏉', matchType: 5 };
 let playerName = 'Alex Smith';
 let currentLevelIndex = 0;
 
@@ -245,13 +260,14 @@ let currentMapGrid = [];
 let activeEntities = [];
 let currentPersonas = {};
 let currentPatrolSpeed = 1.0;
+let currentSpeedAdvantage = 1.0;
+let lastMoveTime = 0;
 
 function goToScreen(screenId) {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     document.getElementById(screenId).classList.add('active');
     currentScreen = screenId;
 
-    // Reset button only visible while playing
     document.getElementById('reset-btn').classList.toggle('visible', screenId === 'screen-game');
 
     if (screenId === 'screen-level-select') {
@@ -264,10 +280,12 @@ function goToScreen(screenId) {
 function selectCharacter(id, cardEl) {
     document.querySelectorAll('#character-grid .card').forEach(c => c.classList.remove('selected'));
     cardEl.classList.add('selected');
-    if (id === 'rugby') selectedCharacter = { id, name: 'Rugby Player', icon: '🏉' };
-    if (id === 'netball') selectedCharacter = { id, name: 'Netball Player', icon: '🏐' };
-    if (id === 'drama') selectedCharacter = { id, name: 'Drama Student', icon: '🎤' };
-    if (id === 'learner') selectedCharacter = { id, name: 'Basic Learner', icon: '🎒' };
+    if (id === 'rugby') selectedCharacter = { id, name: 'Rugby Player', icon: '🏉', matchType: 5 };
+    if (id === 'soccer') selectedCharacter = { id, name: 'Soccer Player', icon: '⚽', matchType: 5 };
+    if (id === 'netball') selectedCharacter = { id, name: 'Netball Player', icon: '🏐', matchType: 5 };
+    if (id === 'library') selectedCharacter = { id, name: 'Library Assistant', icon: '📚', matchType: 4 };
+    if (id === 'drama') selectedCharacter = { id, name: 'Drama Student', icon: '🎤', matchType: 7 };
+    if (id === 'learner') selectedCharacter = { id, name: 'Basic Learner', icon: '🎒', matchType: 0 };
 }
 
 function startSelectedGame() {
@@ -295,7 +313,7 @@ function renderPlayLevelSelect() {
             <div style="font-size: 2.5rem; margin-bottom: 8px;">🏫</div>
             <h3>${lvl.name}</h3>
             <p style="font-size: 0.8rem; color: #94a3b8; margin: 5px 0;">${lvl.description}</p>
-            <p style="font-size: 0.75rem; color: #38bdf8; margin-bottom: 8px;">Patrol Speed: ${lvl.patrolSpeed || 1.0}s</p>
+            <p style="font-size: 0.75rem; color: #38bdf8; margin-bottom: 8px;">Patrol Speed: ${lvl.patrolSpeed || 1.0}s | Speed Boost: ${lvl.speedAdvantage || 1.0}x</p>
             <button class="btn btn-success" style="font-size: 0.85rem; padding: 6px 12px;" onclick="launchGameLevel(${idx})">Play Level</button>
         `;
         grid.appendChild(div);
@@ -308,12 +326,12 @@ function launchGameLevel(index) {
     currentMapGrid = JSON.parse(JSON.stringify(lvl.grid));
     currentPersonas = JSON.parse(JSON.stringify(lvl.personas || {}));
     currentPatrolSpeed = lvl.patrolSpeed !== undefined ? lvl.patrolSpeed : 1.0;
+    currentSpeedAdvantage = lvl.speedAdvantage !== undefined ? lvl.speedAdvantage : 1.0;
 
     prideScore = 0;
     minusScore = 0;
     gameTimer = lvl.timeLimit || 90;
 
-    // Find player start position
     playerX = 1;
     playerY = 1;
     for (let r = 0; r < lvl.rows; r++) {
@@ -328,7 +346,7 @@ function launchGameLevel(index) {
     extractEntitiesFromGrid();
 
     document.getElementById('hud-char').textContent = `${playerName} (${selectedCharacter.name})`;
-    document.getElementById('hud-patrol-speed').textContent = `${currentPatrolSpeed}s`;
+    document.getElementById('hud-patrol-speed').textContent = `${currentPatrolSpeed}s (${currentSpeedAdvantage}x Boost)`;
     updateHudScore();
     goToScreen('screen-game');
 
@@ -385,17 +403,14 @@ function quitGame() {
 }
 
 function resetGame() {
-    // Stop everything
     gameRunning = false;
     if (timerInterval) clearInterval(timerInterval);
     if (patrolInterval) clearInterval(patrolInterval);
     window.removeEventListener('keydown', handleGameKeydown);
 
-    // Close any open dialogue / interact prompt
     document.getElementById('dialogue-modal').classList.remove('active');
     document.getElementById('interact-btn').style.display = 'none';
 
-    // Reset positions and run state (high scores are untouched)
     playerX = 1;
     playerY = 1;
     prideScore = 0;
@@ -410,33 +425,38 @@ function resetGame() {
     goToScreen('screen-menu');
 }
 
+function showSpecialPopup(text, emoji) {
+    const popup = document.getElementById('special-popup');
+    popup.innerHTML = `${emoji} ${text}`;
+    popup.classList.add('show');
+    setTimeout(() => {
+        popup.classList.remove('show');
+    }, 1000); // exactly 1 second on screen
+}
+
 function updateTeacherPatrols() {
     if (!gameRunning) return;
     const lvl = levels[currentLevelIndex];
     const directions = [
-        { dx: 0, dy: -1 }, // Up
-        { dx: 0, dy: 1 },  // Down
-        { dx: -1, dy: 0 }, // Left
-        { dx: 1, dy: 0 }   // Right
+        { dx: 0, dy: -1 },
+        { dx: 0, dy: 1 },
+        { dx: -1, dy: 0 },
+        { dx: 1, dy: 0 }
     ];
 
     let movedAny = false;
 
     activeEntities.forEach(ent => {
         if (ent.type === 6 && !ent.interacted) {
-            // Shuffle directions randomly
             const shuffled = [...directions].sort(() => Math.random() - 0.5);
             for (let d of shuffled) {
                 const nx = ent.x + d.dx;
                 const ny = ent.y + d.dy;
 
-                // Check bounds and wall collisions (tile !== 1)
                 if (nx >= 0 && nx < lvl.cols && ny >= 0 && ny < lvl.rows) {
                     if (currentMapGrid[ny][nx] !== 1) {
-                        // Ensure teacher doesn't step on another active teacher or finish flag
                         const occupant = activeEntities.find(e => !e.interacted && e.x === nx && e.y === ny && e !== ent);
                         if (!occupant && currentMapGrid[ny][nx] !== 8) {
-                            // Update teacher position key mapping in currentPersonas if needed
                             const oldKey = `${ent.y}_${ent.x}`;
                             const newKey = `${ny}_${nx}`;
                             if (currentPersonas[oldKey]) {
@@ -454,7 +474,6 @@ function updateTeacherPatrols() {
                 }
             }
 
-            // Check if teacher bumped into player (same map cell overlap)
             if (ent.x === playerX && ent.y === playerY && !ent.interacted) {
                 openDialogueModal(ent);
             }
@@ -469,6 +488,14 @@ function updateTeacherPatrols() {
 
 function handleGameKeydown(e) {
     if (!gameRunning) return;
+    
+    // Player movement speed limit / throttle enforcement based on speed advantage
+    const now = Date.now();
+    const speedDelay = Math.max(80, 180 / (currentSpeedAdvantage || 1.0));
+    if (now - lastMoveTime < speedDelay && ['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','w','s','a','d','W','S','A','D'].includes(e.key)) {
+        return;
+    }
+
     const lvl = levels[currentLevelIndex];
     let nx = playerX;
     let ny = playerY;
@@ -486,35 +513,49 @@ function handleGameKeydown(e) {
 
     if (nx >= 0 && nx < lvl.cols && ny >= 0 && ny < lvl.rows) {
         if (currentMapGrid[ny][nx] !== 1) {
+            lastMoveTime = now;
             playerX = nx;
             playerY = ny;
             playSound('step');
 
-            // Check win tile (8)
             if (currentMapGrid[ny][nx] === 8) {
                 endGame(true, "Congratulations! You successfully caught the HHS Mascot!");
                 return;
             }
 
-            // Check items / entities / teachers overlap
             const ent = activeEntities.find(en => !en.interacted && en.x === playerX && en.y === playerY);
             if (ent) {
                 if (ent.type === 4) { // Books
-                    prideScore += 15;
+                    let pts = 15;
+                    if (selectedCharacter.id === 'library') {
+                        pts += 20; // Bonus points for Library Assistant picking up books!
+                        showSpecialPopup("Library Assistant Bonus +20 Pts!", "📚");
+                    } else {
+                        showSpecialPopup("Collected Books +15 Pts", "📚");
+                    }
+                    prideScore += pts;
                     playSound('success');
                     ent.interacted = true;
                     updateHudScore();
-                } else if (ent.type === 5) { // Ball
-                    prideScore += 10;
+                } else if (ent.type === 5) { // Ball (Rugby/Soccer/Netball)
+                    let pts = 10;
+                    if (selectedCharacter.id === 'soccer' || selectedCharacter.id === 'rugby' || selectedCharacter.id === 'netball') {
+                        pts += 15; // Bonus points for sports players picking up balls!
+                        showSpecialPopup(`${selectedCharacter.name} Ball Bonus +15 Pts!`, selectedCharacter.icon);
+                    } else {
+                        showSpecialPopup("Collected Sports Ball +10 Pts", "⚽");
+                    }
+                    prideScore += pts;
                     playSound('success');
                     ent.interacted = true;
                     updateHudScore();
                 } else if (ent.type === 7) { // Star
                     prideScore += 30;
+                    showSpecialPopup("Pride Star Bonus +30 Pts!", "⭐");
                     playSound('success');
                     ent.interacted = true;
                     updateHudScore();
-                } else if (ent.type === 6) { // Teacher / SLT overlap collision
+                } else if (ent.type === 6) {
                     openDialogueModal(ent);
                 }
             }
@@ -571,9 +612,10 @@ function openDialogueModal(ent) {
     const avatarContainer = document.getElementById('dlg-avatar-container');
     avatarContainer.innerHTML = '';
 
-    if (persona.photo) {
+    const photoPath = persona.photo || teacherPathMapping[persona.name] || "HB.webp";
+    if (photoPath) {
         const img = document.createElement('img');
-        img.src = getGitHubRawUrl(persona.photo);
+        img.src = getGitHubRawUrl(photoPath);
         img.style.width = '100%';
         img.style.height = '100%';
         img.style.objectFit = 'cover';
@@ -641,7 +683,8 @@ function updateGameLoop() {
         if (ent.type === 6) {
             const key = `${ent.y}_${ent.x}`;
             const p = currentPersonas[key];
-            const photoImg = p && p.photo ? getOrLoadImage(p.photo) : null;
+            const photoFile = p && (p.photo || teacherPathMapping[p.name]) ? (p.photo || teacherPathMapping[p.name]) : null;
+            const photoImg = photoFile ? getOrLoadImage(photoFile) : null;
 
             if (photoImg && photoImg.complete && !photoImg.failed) {
                 ctx.save();
@@ -731,14 +774,12 @@ function getLocalScores() {
 }
 
 function saveHighScore(name, char, pride, total) {
-    // Local backup
     let scores = getLocalScores();
     scores.push({ name, char, pride, total, date: new Date().toLocaleDateString() });
     scores.sort((a, b) => b.total - a.total);
     if (scores.length > 15) scores = scores.slice(0, 15);
     localStorage.setItem('hhs_high_scores', JSON.stringify(scores));
 
-    // Online leaderboard
     if (db) {
         db.collection('scores').add({
             name: String(name).slice(0, 40),
@@ -761,7 +802,6 @@ async function renderLeaderboardTable() {
             const snap = await db.collection('scores').orderBy('total', 'desc').limit(15).get();
             scores = snap.docs.map(d => d.data());
         } catch (e) {
-            console.error("Could not load online scores:", e);
             scores = getLocalScores();
         }
     } else {
@@ -796,14 +836,15 @@ let editorCols = 30;
 let editorGrid = [];
 let editorPersonas = {};
 let editorPatrolSpeed = 1.0;
+let editorSpeedAdvantage = 1.0;
 let selectedPaletteTile = 1;
 
 const paletteItemsConfig = [
     { id: 1, name: 'Wall / Corridor', icon: '🧱', bg: '#334155' },
     { id: 0, name: 'Empty Floor', icon: '·', bg: '#1e293b' },
     { id: 2, name: 'Player Start', icon: 'S', bg: '#0284c7' },
-    { id: 4, name: 'Books (+15)', icon: '📚', bg: '#d97706' },
-    { id: 5, name: 'Rugby/Netball Ball (+10)', icon: '⚽', bg: '#16a34a' },
+    { id: 4, name: 'Books (+15 / +20 Library)', icon: '📚', bg: '#d97706' },
+    { id: 5, name: 'Ball (+10 / +25 Sports)', icon: '⚽', bg: '#16a34a' },
     { id: 6, name: 'Teacher / SLT Persona', icon: '👨‍🏫', bg: '#9333ea' },
     { id: 7, name: 'Bonus Star (+30)', icon: '⭐', bg: '#f59e0b' },
     { id: 8, name: 'Mascot Flag (Finish)', icon: '🏁', bg: '#dc2626' }
@@ -848,10 +889,12 @@ function loadLevelIntoEditor(val) {
         document.getElementById('edit-level-desc').value = "Corridor challenge";
         document.getElementById('edit-level-time').value = "90";
         document.getElementById('edit-patrol-speed').value = "1.0";
+        document.getElementById('edit-speed-advantage').value = "1.0";
         document.getElementById('edit-grid-size').value = "30";
         editorCols = 30;
         editorRows = 10;
         editorPatrolSpeed = 1.0;
+        editorSpeedAdvantage = 1.0;
         editorGrid = [];
         editorPersonas = {};
 
@@ -869,9 +912,11 @@ function loadLevelIntoEditor(val) {
         document.getElementById('edit-level-desc').value = lvl.description;
         document.getElementById('edit-level-time').value = lvl.timeLimit;
         document.getElementById('edit-patrol-speed').value = lvl.patrolSpeed !== undefined ? lvl.patrolSpeed : 1.0;
+        document.getElementById('edit-speed-advantage').value = lvl.speedAdvantage !== undefined ? lvl.speedAdvantage : 1.0;
         editorCols = lvl.cols;
         editorRows = lvl.rows;
         editorPatrolSpeed = lvl.patrolSpeed !== undefined ? lvl.patrolSpeed : 1.0;
+        editorSpeedAdvantage = lvl.speedAdvantage !== undefined ? lvl.speedAdvantage : 1.0;
         document.getElementById('edit-grid-size').value = editorCols;
         editorGrid = JSON.parse(JSON.stringify(lvl.grid));
         editorPersonas = JSON.parse(JSON.stringify(lvl.personas || {}));
@@ -904,7 +949,8 @@ function drawEditorCanvas() {
             if (t === 6) {
                 const key = `${r}_${c}`;
                 const p = editorPersonas[key];
-                const photoImg = p && p.photo ? getOrLoadImage(p.photo) : null;
+                const photoFile = p && (p.photo || teacherPathMapping[p.name]) ? (p.photo || teacherPathMapping[p.name]) : null;
+                const photoImg = photoFile ? getOrLoadImage(photoFile) : null;
 
                 if (photoImg && photoImg.complete && !photoImg.failed) {
                     ctx.save();
@@ -1137,6 +1183,7 @@ function saveCurrentLevel() {
         grid: editorGrid,
         timeLimit: parseInt(document.getElementById('edit-level-time').value) || 90,
         patrolSpeed: parseFloat(document.getElementById('edit-patrol-speed').value) || 1.0,
+        speedAdvantage: parseFloat(document.getElementById('edit-speed-advantage').value) || 1.0,
         personas: editorPersonas
     };
 
@@ -1159,15 +1206,73 @@ function exportLevelJSON() {
         grid: editorGrid,
         timeLimit: parseInt(document.getElementById('edit-level-time').value) || 90,
         patrolSpeed: parseFloat(document.getElementById('edit-patrol-speed').value) || 1.0,
+        speedAdvantage: parseFloat(document.getElementById('edit-speed-advantage').value) || 1.0,
         personas: editorPersonas
     };
     const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(lvlData, null, 2));
     const dlAnchor = document.createElement('a');
     dlAnchor.setAttribute("href", dataStr);
-            dlAnchor.setAttribute("download", "hhs_level.json");
-            document.body.appendChild(dlAnchor);
-            dlAnchor.click();
-            dlAnchor.remove();
+    dlAnchor.setAttribute("download", "hhs_level.json");
+    document.body.appendChild(dlAnchor);
+    dlAnchor.click();
+    dlAnchor.remove();
+}
+
+function buildStarterLevelCode() {
+    const selVal = document.getElementById('editor-level-select').value;
+    const name = document.getElementById('edit-level-name').value.trim() || 'Custom Route';
+    const id = (selVal !== "NEW" && levels[parseInt(selVal)])
+        ? levels[parseInt(selVal)].id
+        : name.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '') || ('custom_' + Date.now());
+
+    const gridLines = editorGrid
+        .map(row => '            [' + row.join(', ') + ']')
+        .join(',\n');
+
+    const personasStr = JSON.stringify(editorPersonas, null, 4)
+        .split('\n')
+        .map((line, i) => i === 0 ? line : '        ' + line)
+        .join('\n');
+
+    return `    {
+        id: ${JSON.stringify(id)},
+        name: ${JSON.stringify(name)},
+        description: ${JSON.stringify(document.getElementById('edit-level-desc').value)},
+        cols: ${editorCols},
+        rows: ${editorRows},
+        patrolSpeed: ${parseFloat(document.getElementById('edit-patrol-speed').value) || 1.0},
+        speedAdvantage: ${parseFloat(document.getElementById('edit-speed-advantage').value) || 1.0},
+        grid: [
+${gridLines}
+        ],
+        timeLimit: ${parseInt(document.getElementById('edit-level-time').value) || 90},
+        personas: ${personasStr}
+    }`;
+}
+
+function exportLevelAsStarterCode() {
+    const code = buildStarterLevelCode();
+
+    // Download as a .js snippet
+    const blob = new Blob([code], { type: 'text/javascript' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'starter_level.js';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+
+    // Also copy to clipboard
+    if (navigator.clipboard) {
+        navigator.clipboard.writeText(code).then(
+            () => showMessageBox("Starter level code copied to clipboard and downloaded as starter_level.js.\n\nPaste it into the defaultLevels array in index.js (add a comma after the previous level)."),
+            () => showMessageBox("Downloaded starter_level.js. Paste its contents into the defaultLevels array in index.js.")
+        );
+    } else {
+        showMessageBox("Downloaded starter_level.js. Paste its contents into the defaultLevels array in index.js.");
+    }
 }
 
 function importLevelJSON(e) {
@@ -1181,6 +1286,7 @@ function importLevelJSON(e) {
             document.getElementById('edit-level-desc').value = lvl.description || "";
             document.getElementById('edit-level-time').value = lvl.timeLimit || 90;
             document.getElementById('edit-patrol-speed').value = lvl.patrolSpeed !== undefined ? lvl.patrolSpeed : 1.0;
+            document.getElementById('edit-speed-advantage').value = lvl.speedAdvantage !== undefined ? lvl.speedAdvantage : 1.0;
             editorCols = lvl.cols || 30;
             editorRows = lvl.rows || 10;
             document.getElementById('edit-grid-size').value = editorCols;
