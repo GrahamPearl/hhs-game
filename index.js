@@ -213,19 +213,83 @@ let defaultLevels = [
             [1, 1, 1, 0, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1],
             [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 1, 0, 0, 1],
             [1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 0, 1],
-            [1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 6, 0, 0, 1, 0, 1],
+            [1, 0, 13, 1, 0, 0, 0, 0, 0, 0, 1, 0, 9, 0, 6, 0, 0, 1, 0, 1],
             [1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1],
             [1, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1],
             [1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1],
-            [1, 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 6, 0, 1],
+            [1, 0, 6, 0, 0, 0, 0, 11, 0, 0, 0, 0, 0, 1, 0, 0, 12, 6, 0, 1],
             [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
             [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
         ],
         timeLimit: 90,
         personas: {
-            "1_4": { name: "Mr. van der Merwe", portrait: "👨‍🏫", photo: "HB.webp", prompt: "Good morning! Why are you rushing down this corridor?", responses: [{ text: "Good morning, Sir! My apologies.", points: 20 }, { text: "No time to chat!", points: -10 }] },
-            "5_14": { name: "Mrs. Dube (SLT)", portrait: "👩‍🏫", photo: "teacher1.png", prompt: "Stop right there. Where is your school blazer?", responses: [{ text: "Good morning, Mrs. Dube. Here it is.", points: 20 }, { text: "*Scurries past silently*", points: -10 }] },
-            "9_17": { name: "Mr. Pillay", portrait: "👔", photo: "teacher2.jpg", prompt: "Quiet in the passages please!", responses: [{ text: "Understood, Sir. Have a great day.", points: 20 }, { text: "Can't hear you!", points: -15 }] }
+            "1_4": {
+                "name": "Mr. van der Merwe",
+                "portrait": "👨‍🏫",
+                "photo": "HB.webp",
+                "prompt": "Good morning! Why are you rushing down this corridor?",
+                "responses": [
+                    {
+                        "text": "No time to chat!",
+                        "points": -10
+                    },
+                    {
+                        "text": "Good morning, Sir! My apologies.",
+                        "points": 20
+                    }
+                ]
+            },
+            "5_14": {
+                "name": "Mr. Leask (SLT)",
+                "role": "slt",
+                "portrait": "👩‍🏫",
+                "photo": "SLT/rylan-leask_deputy_head_boy.JPG",
+                "prompt": "Stop right there. Where is your school blazer?",
+                "responses": [
+                    {
+                        "text": "Good morning, Mr. Leask. Here it is.",
+                        "points": 20
+                    },
+                    {
+                        "text": "*Scurries past silently*",
+                        "points": -10
+                    }
+                ]
+            },
+            "9_17": {
+                "name": "Mr. Joseph",
+                "role": "teacher",
+                "portrait": "👔",
+                "photo": "Teachers/mr_joseph_it.JPG",
+                "prompt": "Quiet in the passages please!",
+                "responses": [
+                    {
+                        "text": "Understood, Sir. Have a great day.",
+                        "points": 20
+                    },
+                    {
+                        "text": "Can't hear you!",
+                        "points": -15
+                    }
+                ]
+            },
+            "9_2": {
+                "name": "Mr. Ndebele",
+                "role": "teacher",
+                "portrait": "👩‍🏫",
+                "photo": "Teachers/mr_ndebele_deputy_principal.JPG",
+                "prompt": "Good morning! Is that how a Hillcrest learner should look?",
+                "responses": [
+                    {
+                        "text": "Ignore",
+                        "points": -10
+                    },
+                    {
+                        "text": "Good morning! Sorry, I will fix it.",
+                        "points": 20
+                    }                    
+                ]
+            }
         }
     }
 ];
@@ -519,7 +583,7 @@ function handleGameKeydown(e) {
             playSound('step');
 
             if (currentMapGrid[ny][nx] === 8) {
-                endGame(true, "Congratulations! You successfully caught the HHS Mascot!");
+                endGame(true, "Congratulations! You won successfully");
                 return;
             }
 
@@ -633,7 +697,10 @@ function openDialogueModal(ent) {
     const container = document.getElementById('dlg-options-container');
     container.innerHTML = '';
 
-    persona.responses.forEach(resp => {
+    // Create a copy and shuffle responses so positive answers aren't fixed to top/bottom
+    const shuffledResponses = [...persona.responses].sort(() => Math.random() - 0.5);
+
+    shuffledResponses.forEach(resp => {
         const btn = document.createElement('button');
         btn.className = 'dialogue-option';
         btn.innerHTML = `<b>${resp.points >= 0 ? '+' + resp.points : resp.points} Pts:</b> "${resp.text}"`;

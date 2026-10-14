@@ -61,7 +61,7 @@ window.saveSettingsConfig = function () {
 /* ---------- 2. Items for every character ---------- */
 const ITEM_DEFS = {
     4:  { icon: '📚', label: 'Books',        base: 15, bonus: 20, who: ['library'],  bg: '#d97706' },
-    5:  { icon: '⚽', label: 'Sports Ball',  base: 10, bonus: 15, who: ['rugby', 'soccer', 'netball'], bg: '#16a34a' },
+    5:  { icon: '⚽', label: 'Sports Ball',  base: 10, bonus: 15, who: ['soccer'], bg: '#16a34a' },
     7:  { icon: '⭐', label: 'Pride Star',   base: 30, bonus: 0,  who: [],           bg: '#f59e0b' },
     9:  { icon: '🏉', label: 'Rugby Ball',   base: 10, bonus: 20, who: ['rugby'],    bg: '#15803d' },
     10: { icon: '⚽', label: 'Soccer Ball',  base: 10, bonus: 20, who: ['soccer'],   bg: '#0d9488' },
@@ -448,6 +448,7 @@ function importLevelJSON(e) {
 }
 
 /* ---------- 6. Bell "You won" after ALL default levels ---------- */
+
 function showBellWin() {
     let m = document.getElementById('bell-modal');
     if (!m) {
@@ -456,14 +457,19 @@ function showBellWin() {
         m.className = 'modal-overlay';
         m.innerHTML = `<div class="modal-content" style="text-align:center;max-width:640px;">
             <h2 style="color:#f0ad4e;margin-bottom:8px;">🔔 You Won! 🔔</h2>
-            <p id="bell-msg" style="color:#cbd5e1;margin-bottom:12px;"></p>
+            <p id="bell-msg" style="color:#cbd5e1;font-size:1.2rem;font-weight:bold;margin-bottom:12px;"></p>
             <img id="bell-img" alt="Hillcrest bell" style="max-width:100%;max-height:50vh;border-radius:10px;border:2px solid #f0ad4e;">
-            <div style="margin-top:15px;"><button class="btn btn-success" onclick="document.getElementById('bell-modal').classList.remove('active')">Continue</button></div>
+            <div style="margin-top:15px;">
+                <button class="btn btn-success" onclick="document.getElementById('bell-modal').classList.remove('active')">Continue</button>
+            </div>
         </div>`;
         document.body.appendChild(m);
     }
+    
+    // Updated end message:
     document.getElementById('bell-msg').textContent =
-        `${playerName}, you completed every Hillcrest route and beat the bell. Well done!`;
+        `Welcome to Hillcrest High School! ${playerName}, you completed every Hillcrest route and beat the bell. Well done!`;
+    
     const img = document.getElementById('bell-img');
     img.style.display = '';
     img.onerror = () => { img.style.display = 'none'; };
