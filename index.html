@@ -12,7 +12,7 @@
     <button id="reset-btn" class="reset-btn" onclick="resetGame()">🔄 Reset</button>
     <header>
         <h1>Hillcrest High School</h1>
-        <p>Maze Runner: Catch the Mascot</p>
+        <p>Maze Runner: Catch the Mascot (Interactive Edition)</p>
     </header>
 
     <div class="container">
@@ -81,11 +81,12 @@
 
         <!-- SCREEN 4: GAME SCREEN -->
         <div id="screen-game" class="screen">
+            <h2 id="hud-level-name" style="text-align: center; color: #38bdf8; margin-bottom: 10px; font-size: 1.4rem;"></h2>
             <div class="game-hud">
                 <div class="hud-item">👤 <span id="hud-char">Player</span></div>
                 <div class="hud-item">⭐ Pride Points: <span id="hud-score" style="color: #4ade80;">0</span></div>
                 <div class="hud-item">⏱️ Time: <span id="hud-time">00:00</span></div>
-                <div class="hud-item" style="font-size: 0.85rem; color: #cbd5e1;">Patrol Speed: <span id="hud-patrol-speed" style="color: #38bdf8;">1.0s</span></div>
+                <div class="hud-item teacher-only" style="font-size: 0.85rem; color: #cbd5e1;">Patrol Speed: <span id="hud-patrol-speed" style="color: #38bdf8;">1.0s</span></div>
                 <button class="btn btn-danger" style="padding: 4px 10px; font-size: 0.8rem;" onclick="quitGame()">Quit</button>
             </div>
             <div class="canvas-container">

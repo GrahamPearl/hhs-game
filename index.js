@@ -484,6 +484,7 @@ function launchGameLevel(index, continueRun) {
 
     extractEntitiesFromGrid();
 
+    document.getElementById('hud-level-name').textContent = lvl.name || `Level ${index + 1}`;
     document.getElementById('hud-char').textContent = `${playerName} (${selectedCharacter.name})`;
     document.getElementById('hud-patrol-speed').textContent = `${currentPatrolSpeed}s (${currentSpeedAdvantage}x Boost)`;
     updateHudScore();
