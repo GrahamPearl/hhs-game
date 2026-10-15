@@ -261,98 +261,126 @@ function showMessageBox(msg) {
 
 let defaultLevels = [
     {
-        id: "corridor_sprint",
-        name: "Main Corridor Sprint",
-        description: "Navigate past patrolling staff from reception to the quad.",
-        cols: 20,
-        rows: 12,
-        patrolSpeed: 1.0,
-        speedAdvantage: 1.0,
+        id: "a_block_bottom_floor",
+        name: "A Block Bottom Floor",
+        description: "Corridor challenge",
+        cols: 30,
+        rows: 10,
+        patrolSpeed: 0.8,
+        speedAdvantage: 1,
+        characterSpeeds: {"learner":1.2},
         grid: [
-            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-            [1, 2, 0, 0, 6, 0, 0, 1, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 8, 1],
-            [1, 1, 1, 0, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1],
-            [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 1, 0, 0, 1],
-            [1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 0, 1],
-            [1, 0, 13, 1, 0, 0, 0, 0, 0, 0, 1, 0, 9, 0, 6, 0, 0, 1, 0, 1],
-            [1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1],
-            [1, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1],
-            [1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1],
-            [1, 0, 6, 0, 0, 0, 0, 11, 0, 0, 0, 0, 0, 1, 0, 0, 12, 6, 0, 1],
-            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 2, 0, 0, 0, 1, 0, 0, 0, 0, 0, 11, 1, 0, 10, 0, 0, 1, 6, 0, 0, 1, 11, 1, 0, 0, 0, 13, 1, 1],
+            [1, 0, 1, 0, 0, 0, 0, 1, 1, 1, 1, 0, 1, 0, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 1, 1, 0, 1, 1],
+            [1, 0, 1, 1, 0, 1, 0, 0, 0, 0, 1, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 4, 1],
+            [1, 0, 6, 0, 0, 1, 1, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 13, 1, 0, 1, 0, 0, 1, 0, 0, 1, 1, 1],
+            [1, 0, 1, 1, 0, 1, 0, 1, 1, 0, 0, 0, 7, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 1, 1, 0, 1, 1, 8, 1],
+            [1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 6, 1, 0, 0, 0, 0, 9, 1, 0, 0, 0, 0, 0, 0, 6, 0, 0, 0, 1],
+            [1, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 1, 1, 0, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1],
+            [1, 0, 0, 0, 0, 9, 1, 0, 4, 0, 12, 0, 1, 0, 1, 0, 0, 0, 0, 12, 0, 0, 0, 0, 0, 0, 0, 0, 5, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
         ],
         timeLimit: 90,
         personas: {
-            "1_4": {
-                "name": "Mr. van der Merwe",
+            "6_11": {
+                "name": "Grade Controllers",
+                "role": "teacher",
                 "portrait": "👨‍🏫",
-                "photo": "HB.webp",
-                "prompt": "Good morning! Why are you rushing down this corridor?",
+                "photo": "Teachers/grade_controllers_1.JPG",
+                "prompt": "Welcome to Hillcrest High School, aren't you supposed to be in class?",
                 "responses": [
                     {
-                        "text": "No time to chat!",
-                        "points": -10
+                        "text": "Good morning, Sir and Ma'am! Going there now.",
+                        "points": 20
                     },
                     {
-                        "text": "Good morning, Sir! My apologies.",
-                        "points": 20
+                        "text": "(Ignore)",
+                        "points": -15
+                    },
+                    {
+                        "text": "Going there now!",
+                        "points": -5
                     }
                 ]
             },
-            "5_14": {
-                "name": "Mr. Leask (SLT)",
+            "4_2": {
+                "name": "Luke Whittle",
                 "role": "slt",
                 "portrait": "👩‍🏫",
-                "photo": "SLT/rylan-leask_deputy_head_boy.JPG",
-                "prompt": "Stop right there. Where is your school blazer?",
-                "responses": [
-                    {
-                        "text": "Good morning, Mr. Leask. Here it is.",
-                        "points": 20
-                    },
-                    {
-                        "text": "*Scurries past silently*",
-                        "points": -10
-                    }
-                ]
-            },
-            "9_17": {
-                "name": "Mr. Joseph",
-                "role": "teacher",
-                "portrait": "👔",
-                "photo": "Teachers/mr_joseph_it.JPG",
-                "prompt": "Quiet in the passages please!",
-                "responses": [
-                    {
-                        "text": "Understood, Sir. Have a great day.",
-                        "points": 20
-                    },
-                    {
-                        "text": "Can't hear you!",
-                        "points": -15
-                    }
-                ]
-            },
-            "9_2": {
-                "name": "Mr. Ndebele",
-                "role": "teacher",
-                "portrait": "👩‍🏫",
-                "photo": "Teachers/mr_ndebele_deputy_principal.JPG",
+                "photo": "SLT/luke_whittle_head_boy.JPG",
                 "prompt": "Good morning! Is that how a Hillcrest learner should look?",
                 "responses": [
                     {
-                        "text": "Ignore",
+                        "text": "Good morning! Sorry, I will fix it.",
+                        "points": 20
+                    },
+                    {
+                        "text": "(Ignore)",
                         "points": -10
                     },
                     {
-                        "text": "Good morning! Sorry, I will fix it.",
+                        "text": "(Run Away)",
+                        "points": -15
+                    },
+                    {
+                        "text": "Sorry I will fix it soon.",
+                        "points": 5
+                    }
+                ]
+            },
+            "6_25": {
+                "name": "Mr Ndebele",
+                "role": "teacher",
+                "portrait": "👨‍🏫",
+                "photo": "Teachers/mr_ndebele_deputy_principal.JPG",
+                "prompt": "Good morning, where are you going?",
+                "responses": [
+                    {
+                        "text": "Good morning Mr. Ndebele just going to class.",
                         "points": 20
-                    }                    
+                    },
+                    {
+                        "text": "(Ignore)",
+                        "points": -10
+                    },
+                    {
+                        "text": "Cannot hear you!",
+                        "points": -20
+                    },
+                    {
+                        "text": "Going to class sir.",
+                        "points": 5
+                    }
+                ]
+            },
+            "1_18": {
+                "name": "Tamuka Chovuchovu",
+                "role": "slt",
+                "portrait": "👩‍🏫",
+                "photo": "SLT/tamuka_chovuchovu_deputy_head_boy.JPG",
+                "prompt": "Good morning, how are you doing?",
+                "responses": [
+                    {
+                        "text": "Good morning. I am doing good and you?",
+                        "points": 20
+                    },
+                    {
+                        "text": "(Ignore)",
+                        "points": -15
+                    },
+                    {
+                        "text": "Good morning. I am doing good.",
+                        "points": 10
+                    },
+                    {
+                        "text": "Sorry I have to rush to class can't talk.",
+                        "points": -8
+                    }
                 ]
             }
         }
-    }
+    },
 ];
 
 let levels = [];
