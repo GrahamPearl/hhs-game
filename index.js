@@ -631,6 +631,122 @@ let defaultLevels = [
             }
         }
     }
+    {
+        id: "b_block_bottom_floor",
+        name: "B Block Bottom Floor",
+        description: "Roof Challenge",
+        cols: 24,
+        rows: 9,
+        patrolSpeed: 0.9,
+        speedAdvantage: 1,
+        characterSpeeds: {"rugby":1.2,"netball":1.2},
+        grid: [
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 1, 0, 1, 0, 0, 5, 0, 1, 0, 1, 6, 0, 0, 0, 1, 0, 0, 0, 1, 4, 1, 0, 1],
+            [1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0, 11, 1, 0, 1, 0, 6, 0, 0, 0, 1],
+            [1, 0, 1, 1, 9, 0, 1, 0, 0, 0, 1, 12, 0, 1, 1, 0, 0, 0, 1, 0, 1, 1, 0, 1],
+            [1, 0, 13, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0, 13, 1],
+            [1, 0, 1, 6, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 9, 1, 0, 1, 1],
+            [1, 0, 1, 0, 1, 1, 12, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1],
+            [1, 4, 1, 0, 2, 1, 0, 1, 1, 11, 1, 6, 1, 0, 1, 0, 5, 0, 0, 0, 0, 1, 8, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        ],
+        timeLimit: 65,
+        personas: {
+            "5_3": {
+                "name": "SLT Member",
+                "role": "teacher",
+                "portrait": "👩‍🏫",
+                "photo": "Teachers/mrs_ramsern_geography.JPG",
+                "prompt": "Good afternoon! Is that how a Hillcrest learner should look?",
+                "responses": [
+                    {
+                        "text": "Good morning! Thank you, I will fix it now.",
+                        "points": 20
+                    },
+                    {
+                        "text": "(Ignore)",
+                        "points": -10
+                    },
+                    {
+                        "text": "Yes it is.",
+                        "points": -15
+                    },
+                    {
+                        "text": "Sorry ma'am I will fix it now.",
+                        "points": 10
+                    }
+                ]
+            },
+            "2_19": {
+                "name": "Mrs Knight (Principal)",
+                "role": "teacher",
+                "portrait": "👨‍🏫",
+                "photo": "Teachers/mrs_knight_principal.jpg",
+                "prompt": "Good morning!",
+                "responses": [
+                    {
+                        "text": "Good morning, ma'am! I hope your day is going well.",
+                        "points": 15
+                    },
+                    {
+                        "text": "(Ignore)",
+                        "points": -10
+                    },
+                    {
+                        "text": "(Run Past)",
+                        "points": -15
+                    },
+                    {
+                        "text": "Good morning ma'am.",
+                        "points": 5
+                    }
+                ]
+            },
+            "7_11": {
+                "name": "Ziyanda Mabhid",
+                "role": "slt",
+                "portrait": "👩‍🏫",
+                "photo": "SLT/ziyanda_mabhida_deputy_head_girl.JPG",
+                "prompt": "Good afternoon, how is your day going?",
+                "responses": [
+                    {
+                        "text": "Good afternoon ma'am my day is going well, and yours?",
+                        "points": 15
+                    },
+                    {
+                        "text": "Ignore",
+                        "points": -10
+                    },
+                    {
+                        "text": "Great and yours?",
+                        "points": 5
+                    }
+                ]
+            },
+            "1_11": {
+                "name": "Luke Whittle",
+                "role": "slt",
+                "portrait": "👩‍🏫",
+                "photo": "SLT/luke_whittle_head_boy.JPG",
+                "prompt": "Good morning! Please make sure you do not run in the hallways.",
+                "responses": [
+                    {
+                        "text": "Good morning! Sorry Sir I will slow down.",
+                        "points": 20
+                    },
+                    {
+                        "text": "Ignore",
+                        "points": -10
+                    },
+                    {
+                        "text": "(Continue Running)",
+                        "points": -15
+                    }
+                ]
+            }
+        }
+    }
 ];
 
 let levels = [];
