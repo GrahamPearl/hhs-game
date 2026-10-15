@@ -402,7 +402,7 @@ let defaultLevels = [
             [1, 13, 1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 2, 0, 1],
             [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
         ],
-        timeLimit: 60,
+        timeLimit: 70,
         personas: {
             "7_20": {
                 "name": "Rylan Leask",
@@ -510,6 +510,127 @@ let defaultLevels = [
             }
         }
     },
+        {
+        id: "b_block_middle_floor",
+        name: "B Block Middle Floor",
+        description: "Corridor challenge",
+        cols: 30,
+        rows: 10,
+        patrolSpeed: 0.7,
+        speedAdvantage: 1.1,
+        characterSpeeds: {"library":1.2,"drama":1.2},
+        grid: [
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 10, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 7, 0, 0, 12, 0, 1, 11, 1, 1, 1, 1, 0, 0, 0, 13, 0, 1],
+            [1, 6, 1, 0, 1, 1, 4, 0, 1, 0, 1, 1, 0, 1, 6, 0, 1, 0, 1, 0, 1, 4, 0, 1, 0, 1, 1, 1, 1, 1],
+            [1, 0, 1, 0, 9, 1, 0, 1, 1, 0, 0, 0, 4, 1, 1, 0, 1, 0, 1, 0, 1, 1, 0, 1, 10, 0, 1, 4, 4, 1],
+            [1, 13, 13, 1, 0, 1, 0, 1, 11, 0, 1, 1, 0, 0, 0, 0, 10, 0, 1, 0, 0, 0, 0, 1, 1, 0, 0, 4, 4, 1],
+            [1, 12, 12, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 0, 1, 0, 1, 1, 0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 1],
+            [1, 0, 1, 1, 1, 1, 0, 0, 0, 9, 1, 1, 1, 0, 0, 1, 0, 0, 1, 9, 0, 1, 6, 0, 1, 0, 0, 1, 0, 1],
+            [1, 0, 1, 11, 0, 1, 6, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 0, 1, 1, 0, 1, 0, 1, 9, 0, 12, 1, 0, 1],
+            [1, 0, 8, 1, 0, 4, 0, 1, 13, 1, 2, 0, 0, 10, 0, 0, 1, 0, 0, 0, 11, 1, 0, 0, 0, 0, 1, 8, 0, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        ],
+        timeLimit: 80,
+        personas: {
+            "2_14": {
+                "name": "Mr Moore",
+                "role": "teacher",
+                "portrait": "👨‍🏫",
+                "photo": "Teachers/mr_moore_history.JPG",
+                "prompt": "Good evening why are you over here?",
+                "responses": [
+                    {
+                        "text": "Good evening Mr. Moore I came to go to the library.",
+                        "points": 20
+                    },
+                    {
+                        "text": "I don't know",
+                        "points": -10
+                    },
+                    {
+                        "text": "Good evening, I just came to go to ask a teacher about something.",
+                        "points": 8
+                    }
+                ]
+            },
+            "2_1": {
+                "name": "Teacher",
+                "role": "teacher",
+                "portrait": "👨‍🏫",
+                "photo": "Teachers/mr_joseph_it.JPG",
+                "prompt": "Good afternoon how are you?",
+                "responses": [
+                    {
+                        "text": "Good afternoon, Sir I am good and you? ",
+                        "points": 20
+                    },
+                    {
+                        "text": "(Ignore)",
+                        "points": -10
+                    },
+                    {
+                        "text": "Good afternoon Sir I am going to the computer room.",
+                        "points": 10
+                    },
+                    {
+                        "text": "I can't hear you!",
+                        "points": -15
+                    }
+                ]
+            },
+            "6_22": {
+                "name": "Isabella te Brugge",
+                "role": "slt",
+                "portrait": "👩‍🏫",
+                "photo": "SLT/isabella_te_brugge_deputy_head.JPG",
+                "prompt": "Good evening, why are you not at lessons?",
+                "responses": [
+                    {
+                        "text": "Good evening, I just need to fetch some books. Here is the teacher's card.",
+                        "points": 20
+                    },
+                    {
+                        "text": "(Ignore)",
+                        "points": -8
+                    },
+                    {
+                        "text": "(Run Away)",
+                        "points": -20
+                    },
+                    {
+                        "text": "Good evening, I just needed to do something for the teacher.",
+                        "points": 10
+                    }
+                ]
+            },
+            "7_6": {
+                "name": "Jorja Pretorius",
+                "role": "slt",
+                "portrait": "👩‍🏫",
+                "photo": "SLT/jorja_pretorius_head_girl.JPG",
+                "prompt": "Good afternoon, you seem to be using the wrong school bag.",
+                "responses": [
+                    {
+                        "text": "Good morning! Thank you, I will fix it tomorrow.",
+                        "points": 10
+                    },
+                    {
+                        "text": "Ignore",
+                        "points": -10
+                    },
+                    {
+                        "text": "I have a note from the grade controllers it is just for today.",
+                        "points": 15
+                    },
+                    {
+                        "text": "I'm sure it is fine.",
+                        "points": -15
+                    }
+                ]
+            }
+        }
+    }
 ];
 
 let levels = [];
