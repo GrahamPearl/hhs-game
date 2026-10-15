@@ -426,3 +426,17 @@ th { color: #38bdf8; }
 body:not(.teacher-mode) .teacher-only {
     display: none !important;
 }
+
+/* ===== Game screen: use more of the window so the grid can be big ===== */
+.container:has(#screen-game.active) {
+    max-width: min(1500px, 100%);
+}
+
+.canvas-container {
+    padding: 0;
+    line-height: 0;
+}
+
+#gameCanvas {
+    margin: 0 auto;
+}

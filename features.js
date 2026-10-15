@@ -188,12 +188,42 @@ function drawTileContent(ctx, t, r, c, ts, personas) {
     }
 }
 
+/* Size the game canvas to fit the current level: as big as the screen allows,
+   one uniform square tile size, crisp on high-DPI screens. */
+function fitGameCanvas(lvl) {
+    const canvas = document.getElementById('gameCanvas');
+    const wrap = canvas.parentElement; // .canvas-container
+    const dpr = window.devicePixelRatio || 1;
+
+    const availW = Math.max(200, wrap.clientWidth);
+    const top = wrap.getBoundingClientRect().top + window.scrollY;
+    const availH = Math.max(200, window.innerHeight - top - 90); // leave room for the help text / button
+
+    const ts = Math.max(12, Math.floor(Math.min(availW / lvl.cols, availH / lvl.rows)));
+    const cssW = ts * lvl.cols, cssH = ts * lvl.rows;
+
+    if (canvas.dataset.cssW !== String(cssW) || canvas.dataset.cssH !== String(cssH) || canvas.dataset.dpr !== String(dpr)) {
+        canvas.width = Math.round(cssW * dpr);
+        canvas.height = Math.round(cssH * dpr);
+        canvas.style.width = cssW + 'px';
+        canvas.style.height = cssH + 'px';
+        canvas.style.maxWidth = 'none';
+        canvas.dataset.cssW = cssW;
+        canvas.dataset.cssH = cssH;
+        canvas.dataset.dpr = dpr;
+    }
+    return { ts, dpr, cssW, cssH };
+}
+
 function updateGameLoop() {
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
     const lvl = levels[currentLevelIndex];
-    const ts = Math.floor(canvas.width / lvl.cols);
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    if (!lvl || !currentMapGrid.length) return;
+
+    const { ts, dpr, cssW, cssH } = fitGameCanvas(lvl);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0); // draw in CSS pixels
+    ctx.clearRect(0, 0, cssW, cssH);
 
     for (let r = 0; r < lvl.rows; r++) {
         for (let c = 0; c < lvl.cols; c++) {
@@ -201,6 +231,7 @@ function updateGameLoop() {
             ctx.fillStyle = t === 1 ? '#334155' : '#1e293b';
             ctx.fillRect(c * ts, r * ts, ts, ts);
             ctx.strokeStyle = '#1e293b';
+            ctx.lineWidth = 1;
             ctx.strokeRect(c * ts, r * ts, ts, ts);
             if (t === 8) drawTileContent(ctx, 8, r, c, ts, currentPersonas);
         }
@@ -213,6 +244,12 @@ function updateGameLoop() {
     ctx.textBaseline = 'middle';
     ctx.fillText(selectedCharacter.icon, playerX * ts + ts / 2, playerY * ts + ts / 2);
 }
+
+// Re-fit when the window is resized / rotated
+window.addEventListener('resize', function () {
+    const g = document.getElementById('screen-game');
+    if (g && g.classList.contains('active') && typeof currentMapGrid !== 'undefined' && currentMapGrid.length) updateGameLoop();
+});
 
 function drawEditorCanvas() {
     const canvas = document.getElementById('editorCanvas');
