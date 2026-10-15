@@ -3,6 +3,7 @@
   "githubRepo": "hhs-game",
   "branch": "main",
   "photosFolder": "staff-photos",
+  "teacher": 0,
   "staffFiles": [
     "HB.webp",
     "teacher1.png",

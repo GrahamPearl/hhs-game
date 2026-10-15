@@ -20,6 +20,7 @@ let appSettings = {
     githubRepo: "hhs-game",
     branch: "main",
     photosFolder: "staff-photos",
+    teacher: 0, // 1 = teacher mode (Level Editor + Select Level visible), 0 = learner mode
     staffFiles: [
         "HB.webp",
         "teacher1.png",
@@ -72,12 +73,42 @@ function loadSettings() {
 }
 loadSettings();
 
+/* ---------- Teacher mode ("teacher": 1 or 0 in settings.json) ---------- */
+function isTeacherMode() {
+    return Number(appSettings.teacher) === 1;
+}
+
+function applyTeacherMode() {
+    document.body.classList.toggle('teacher-mode', isTeacherMode());
+    if (!isTeacherMode() && (currentScreen === 'screen-editor' || currentScreen === 'screen-level-select')) {
+        goToScreen('screen-menu');
+    }
+}
+
+// Load settings.json from the site. Order of priority:
+// built-in defaults < settings.json < settings saved on this device (Settings modal)
+async function loadSettingsFile() {
+    try {
+        const res = await fetch('settings.json', { cache: 'no-store' });
+        if (res.ok) {
+            const fileData = await res.json();
+            let stored = {};
+            try { stored = JSON.parse(localStorage.getItem('hhs_game_settings') || '{}'); } catch (e) { }
+            appSettings = Object.assign(appSettings, fileData, stored);
+        }
+    } catch (e) {
+        console.warn('Could not load settings.json, using built-in/local settings.', e);
+    }
+    applyTeacherMode();
+}
+
 function openSettingsModal() {
     document.getElementById('cfg-username').value = appSettings.githubUsername;
     document.getElementById('cfg-repo').value = appSettings.githubRepo;
     document.getElementById('cfg-branch').value = appSettings.branch;
     document.getElementById('cfg-folder').value = appSettings.photosFolder;
     document.getElementById('cfg-files').value = appSettings.staffFiles.join(', ');
+    document.getElementById('cfg-teacher').value = isTeacherMode() ? '1' : '0';
     updateSettingsUrlPreview();
 
     ['cfg-username', 'cfg-repo', 'cfg-branch', 'cfg-folder', 'cfg-files'].forEach(id => {
@@ -104,8 +135,10 @@ function saveSettingsConfig() {
 
     const rawFiles = document.getElementById('cfg-files').value;
     appSettings.staffFiles = rawFiles.split(',').map(s => s.trim()).filter(s => s.length > 0);
+    appSettings.teacher = Number(document.getElementById('cfg-teacher').value) === 1 ? 1 : 0;
 
     localStorage.setItem('hhs_game_settings', JSON.stringify(appSettings));
+    applyTeacherMode();
     closeSettingsModal();
     showMessageBox("GitHub Staff Settings saved successfully!");
 }
@@ -133,6 +166,7 @@ function importSettingsJSON(e) {
             const data = JSON.parse(evt.target.result);
             appSettings = Object.assign(appSettings, data);
             localStorage.setItem('hhs_game_settings', JSON.stringify(appSettings));
+            applyTeacherMode();
             openSettingsModal();
             showMessageBox("settings.json imported successfully!");
         } catch (err) {
@@ -149,10 +183,37 @@ function initAudio() {
     }
 }
 
+// Sad "wah wah wah waaah" for finishing without positive points
+function playSadSound() {
+    try {
+        initAudio();
+        if (!audioCtx) return;
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const t0 = audioCtx.currentTime;
+        const notes = [[392, 0.0, 0.30], [370, 0.35, 0.30], [349, 0.70, 0.30], [330, 1.05, 0.90]];
+        notes.forEach(([freq, offset, dur], i) => {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'sawtooth';
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            const s = t0 + offset;
+            osc.frequency.setValueAtTime(freq, s);
+            if (i === notes.length - 1) osc.frequency.exponentialRampToValueAtTime(freq * 0.75, s + dur);
+            gain.gain.setValueAtTime(0.0001, s);
+            gain.gain.exponentialRampToValueAtTime(0.18, s + 0.03);
+            gain.gain.exponentialRampToValueAtTime(0.0001, s + dur);
+            osc.start(s);
+            osc.stop(s + dur + 0.05);
+        });
+    } catch (e) { }
+}
+
 function playSound(type) {
     try {
         initAudio();
         if (!audioCtx) return;
+        if (type === 'sad') { playSadSound(); return; }
         const osc = audioCtx.createOscillator();
         const gain = audioCtx.createGain();
         osc.connect(gain);
@@ -310,6 +371,8 @@ loadLevels();
 let currentScreen = 'screen-menu';
 let selectedCharacter = { id: 'rugby', name: 'Rugby Player', icon: '🏉', matchType: 5 };
 let playerName = 'Alex Smith';
+let playerGrade = '7';
+let playerSchool = 'Hillcrest Primary School';
 let currentLevelIndex = 0;
 
 let playerX = 1;
@@ -357,13 +420,21 @@ function startSelectedGame() {
 }
 
 function confirmPlayerName() {
-    const val = document.getElementById('player-name-input').value.trim();
-    if (val) playerName = val;
+    const name = document.getElementById('player-name-input').value.trim();
+    const grade = document.getElementById('player-grade-input').value.trim();
+    const school = document.getElementById('player-school-input').value.trim();
+    if (name) playerName = name;
+    if (grade) playerGrade = grade;
+    if (school) playerSchool = school;
     document.getElementById('name-modal').classList.remove('active');
-    goToScreen('screen-level-select');
+
+    // Play Game runs the default levels one after another
+    const defaults = getDefaultLevelIndices();
+    launchGameLevel(defaults.length ? defaults[0] : 0);
 }
 
 function openLevelSelectForPlay() {
+    if (!isTeacherMode()) return;
     goToScreen('screen-level-select');
 }
 
@@ -384,7 +455,12 @@ function renderPlayLevelSelect() {
     });
 }
 
-function launchGameLevel(index) {
+function launchGameLevel(index, continueRun) {
+    if (!continueRun || !run) {
+        beginRun();
+        prideScore = 0;
+        minusScore = 0;
+    }
     currentLevelIndex = index;
     const lvl = levels[index];
     currentMapGrid = JSON.parse(JSON.stringify(lvl.grid));
@@ -392,9 +468,8 @@ function launchGameLevel(index) {
     currentPatrolSpeed = lvl.patrolSpeed !== undefined ? lvl.patrolSpeed : 1.0;
     currentSpeedAdvantage = lvl.speedAdvantage !== undefined ? lvl.speedAdvantage : 1.0;
 
-    prideScore = 0;
-    minusScore = 0;
     gameTimer = lvl.timeLimit || 90;
+    document.getElementById('interact-btn').style.display = 'none';
 
     playerX = 1;
     playerY = 1;
@@ -468,6 +543,8 @@ function quitGame() {
 
 function resetGame() {
     gameRunning = false;
+    // Save the current learner's progress before clearing (people may need to be ended early)
+    saveRunScore('reset');
     if (timerInterval) clearInterval(timerInterval);
     if (patrolInterval) clearInterval(patrolInterval);
     window.removeEventListener('keydown', handleGameKeydown);
@@ -480,6 +557,8 @@ function resetGame() {
     prideScore = 0;
     minusScore = 0;
     gameTimer = 0;
+    run = null;
+    victoryNextIndex = -1;
     activeEntities = [];
     currentMapGrid = [];
     currentPersonas = {};
@@ -801,29 +880,103 @@ function updateGameLoop() {
     ctx.fillText(selectedCharacter.icon, playerX * tileSize + tileSize / 2, playerY * tileSize + tileSize / 2);
 }
 
+// ---- A "run" is one play-through; score carries over between levels ----
+let run = null; // { id, timeBonus, completed: [levelIds], saved }
+let victoryNextIndex = -1;
+
+function beginRun() {
+    run = {
+        id: 'run_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8),
+        timeBonus: 0,
+        completed: [],
+        saved: false
+    };
+}
+
+function hasPositivePoints() {
+    return (prideScore - minusScore) > 0;
+}
+
+function getDefaultLevelIndices() {
+    const ids = defaultLevels.map(l => l.id);
+    const out = [];
+    levels.forEach((l, i) => { if (ids.includes(l.id)) out.push(i); });
+    return out;
+}
+
+function nextDefaultLevelIndex(fromIndex) {
+    const defaults = getDefaultLevelIndices();
+    if (!defaults.includes(fromIndex)) return -1;
+    const next = defaults.find(i => i > fromIndex && !run.completed.includes(levels[i].id));
+    return next === undefined ? -1 : next;
+}
+
+function allDefaultsCompleted() {
+    const ids = getDefaultLevelIndices().map(i => levels[i].id);
+    return ids.length > 0 && ids.every(id => run.completed.includes(id));
+}
+
+function saveRunScore(result) {
+    if (!run || run.saved) return;
+    run.saved = true;
+    const net = prideScore - minusScore;
+    saveHighScore({
+        name: playerName,
+        grade: playerGrade,
+        school: playerSchool,
+        char: selectedCharacter.name,
+        pride: net,
+        total: net + run.timeBonus,
+        levelsCompleted: run.completed.length,
+        result: result
+    });
+}
+
 function endGame(victory, message) {
     gameRunning = false;
     if (timerInterval) clearInterval(timerInterval);
     if (patrolInterval) clearInterval(patrolInterval);
     window.removeEventListener('keydown', handleGameKeydown);
+    if (!run) beginRun();
 
-    document.getElementById('victory-title').textContent = victory ? "Level Completed!" : "Game Over";
-    document.getElementById('victory-subtitle').textContent = message;
+    const lvl = levels[currentLevelIndex];
+    run.timeBonus += victory ? gameTimer * 2 : 0;
+    if (victory && lvl && !run.completed.includes(lvl.id)) run.completed.push(lvl.id);
+
+    const nextIndex = victory ? nextDefaultLevelIndex(currentLevelIndex) : -1;
+    const allDone = victory && nextIndex === -1 && allDefaultsCompleted();
+    const total = (prideScore - minusScore) + run.timeBonus;
+    victoryNextIndex = nextIndex;
+
+    const btn = document.getElementById('victory-action-btn');
+    if (nextIndex !== -1) {
+        document.getElementById('victory-title').textContent = "Level Completed!";
+        document.getElementById('victory-subtitle').textContent = `${message} Next up: ${levels[nextIndex].name}`;
+        document.getElementById('res-total-label').textContent = "Total Score So Far:";
+        btn.textContent = "Next Level ▶";
+    } else {
+        document.getElementById('victory-title').textContent = victory ? (allDone ? "All Levels Completed!" : "Level Completed!") : "Game Over";
+        document.getElementById('victory-subtitle').textContent = message;
+        document.getElementById('res-total-label').textContent = "Final Score:";
+        btn.textContent = "Save Score & Menu";
+        saveRunScore(victory ? 'completed' : 'time-up');
+    }
 
     document.getElementById('res-name').textContent = playerName;
+    document.getElementById('res-school').textContent = playerSchool;
+    document.getElementById('res-grade').textContent = formatGrade(playerGrade);
     document.getElementById('res-char').textContent = selectedCharacter.name;
     document.getElementById('res-pride').textContent = prideScore;
     document.getElementById('res-minus').textContent = minusScore;
-
-    const timeBonus = victory ? gameTimer * 2 : 0;
-    document.getElementById('res-time').textContent = `+${timeBonus}`;
-
-    const total = (prideScore - minusScore) + timeBonus;
+    document.getElementById('res-time').textContent = `+${run.timeBonus}`;
     document.getElementById('res-total').textContent = total;
 
-    saveHighScore(playerName, selectedCharacter.name, prideScore - minusScore, total);
-
     goToScreen('screen-victory');
+
+    if (nextIndex === -1) {
+        if (allDone && typeof showBellWin === 'function') showBellWin();
+        else if (!hasPositivePoints()) playSound('sad');
+    }
 }
 
 function escapeHtml(str) {
@@ -840,28 +993,41 @@ function getLocalScores() {
     }
 }
 
-function saveHighScore(name, char, pride, total) {
+function formatGrade(g) {
+    const s = (g === undefined || g === null) ? '' : String(g).trim();
+    if (!s) return '-';
+    return /^grade\b/i.test(s) ? s : `Grade ${s}`;
+}
+
+function saveHighScore(entry) {
+    const record = {
+        name: String(entry.name || 'Unknown').slice(0, 40),
+        grade: String(entry.grade || '').slice(0, 20),
+        school: String(entry.school || '').slice(0, 60),
+        char: String(entry.char || ''),
+        pride: Math.round(Number(entry.pride) || 0),
+        total: Math.round(Number(entry.total) || 0),
+        levelsCompleted: Math.round(Number(entry.levelsCompleted) || 0),
+        result: String(entry.result || 'completed'),
+        date: new Date().toLocaleDateString()
+    };
+
     let scores = getLocalScores();
-    scores.push({ name, char, pride, total, date: new Date().toLocaleDateString() });
+    scores.push(record);
     scores.sort((a, b) => b.total - a.total);
     if (scores.length > 15) scores = scores.slice(0, 15);
     localStorage.setItem('hhs_high_scores', JSON.stringify(scores));
 
     if (db) {
-        db.collection('scores').add({
-            name: String(name).slice(0, 40),
-            char: String(char),
-            pride: pride,
-            total: total,
-            date: new Date().toLocaleDateString(),
+        db.collection('scores').add(Object.assign({}, record, {
             createdAt: firebase.firestore.FieldValue.serverTimestamp()
-        }).catch(err => console.error("Could not save online score:", err));
+        })).catch(err => console.error("Could not save online score (check Firestore rules):", err.code, err.message));
     }
 }
 
 async function renderLeaderboardTable() {
     const tbody = document.getElementById('leaderboard-tbody');
-    tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: #94a3b8;">Loading scores...</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: #94a3b8;">Loading scores...</td></tr>`;
 
     let scores = [];
     if (db) {
@@ -877,7 +1043,7 @@ async function renderLeaderboardTable() {
 
     tbody.innerHTML = '';
     if (scores.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: #94a3b8;">No scores recorded yet. Play a level!</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: #94a3b8;">No scores recorded yet. Play a level!</td></tr>`;
         return;
     }
 
@@ -886,6 +1052,8 @@ async function renderLeaderboardTable() {
         tr.innerHTML = `
             <td>#${idx + 1}</td>
             <td>${escapeHtml(s.name)}</td>
+            <td>${s.school ? escapeHtml(s.school) : '-'}</td>
+            <td>${escapeHtml(formatGrade(s.grade))}</td>
             <td>${escapeHtml(s.char)}</td>
             <td style="color: #4ade80;">${s.pride}</td>
             <td style="color: #38bdf8; font-weight: bold;">${s.total}</td>
@@ -895,7 +1063,19 @@ async function renderLeaderboardTable() {
 }
 
 function saveScoreAndReturn() {
+    run = null;
     goToScreen('screen-menu');
+}
+
+// Button on the results screen: next default level, or back to menu when the run is over
+function victoryButtonClick() {
+    if (victoryNextIndex >= 0) {
+        const i = victoryNextIndex;
+        victoryNextIndex = -1;
+        launchGameLevel(i, true);
+    } else {
+        saveScoreAndReturn();
+    }
 }
 
 let editorRows = 10;
@@ -918,6 +1098,7 @@ const paletteItemsConfig = [
 ];
 
 function openLevelEditorMenu() {
+    if (!isTeacherMode()) return;
     const sel = document.getElementById('editor-level-select');
     sel.innerHTML = `<option value="NEW">+ Create New Level</option>`;
     levels.forEach((lvl, idx) => {
@@ -1367,3 +1548,6 @@ function importLevelJSON(e) {
     };
     reader.readAsText(file);
 }
+
+applyTeacherMode();
+loadSettingsFile();

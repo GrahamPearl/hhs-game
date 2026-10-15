@@ -422,12 +422,7 @@ th { color: #38bdf8; }
     text-align: center;
 }
 
-
-
-
-
-
-
-
-
-
+/* Teacher mode: buttons marked teacher-only are hidden unless settings.json has "teacher": 1 */
+body:not(.teacher-mode) .teacher-only {
+    display: none !important;
+}

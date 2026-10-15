@@ -29,6 +29,8 @@ if (!Array.isArray(appSettings.sltFiles)) {
     ];
 }
 const BELL_IMAGE = "Bell/bell.JPG";
+const LOGO_IMAGE = "Symbols/hhs_logo.png";
+const KINGFISHER_IMAGE = "Symbols/hhs_kingfisher.png";
 
 function getPhotoListForRole(role) {
     const list = role === 'slt' ? appSettings.sltFiles : appSettings.teacherFiles;
@@ -165,9 +167,21 @@ function drawTileContent(ctx, t, r, c, ts, personas) {
         }
         return;
     }
+    if (t === 8) {
+        // Flag on top, HHS kingfisher mascot underneath it
+        ctx.font = `${Math.floor(ts * 0.5)}px sans-serif`;
+        ctx.fillText('🏁', cx, r * ts + ts * 0.3);
+        const kf = getOrLoadImage(KINGFISHER_IMAGE);
+        if (kf && kf.complete && !kf.failed && kf.naturalWidth) {
+            const maxW = ts * 0.9, maxH = ts * 0.5;
+            const sc = Math.min(maxW / kf.naturalWidth, maxH / kf.naturalHeight);
+            const w = kf.naturalWidth * sc, h = kf.naturalHeight * sc;
+            ctx.drawImage(kf, cx - w / 2, r * ts + ts * 0.55 + (maxH - h) / 2, w, h);
+        }
+        return;
+    }
     let sym = '';
     if (ITEM_DEFS[t]) sym = ITEM_DEFS[t].icon;
-    else if (t === 8) sym = '🏁';
     if (sym) {
         ctx.font = `${Math.floor(ts * 0.7)}px sans-serif`;
         ctx.fillText(sym, cx, cy);
@@ -361,8 +375,8 @@ window.loadLevelIntoEditor = function (val) {
 };
 
 const _launch = window.launchGameLevel;
-window.launchGameLevel = function (index) {
-    _launch(index);
+window.launchGameLevel = function (index, continueRun) {
+    _launch(index, continueRun);
     const lvl = levels[index];
     const mult = (lvl.characterSpeeds && lvl.characterSpeeds[selectedCharacter.id]) || 1;
     currentSpeedAdvantage = (lvl.speedAdvantage !== undefined ? lvl.speedAdvantage : 1) * mult;
@@ -447,56 +461,56 @@ function importLevelJSON(e) {
     reader.readAsText(file);
 }
 
-/* ---------- 6. Bell "You won" after ALL default levels ---------- */
+/* ---------- 6. Bell "You won" after ALL default levels (called from endGame in index.js) ---------- */
 
 function showBellWin() {
+    const negative = prideScore < minusScore;
     let m = document.getElementById('bell-modal');
     if (!m) {
         m = document.createElement('div');
         m.id = 'bell-modal';
         m.className = 'modal-overlay';
         m.innerHTML = `<div class="modal-content" style="text-align:center;max-width:640px;">
-            <h2 style="color:#f0ad4e;margin-bottom:8px;">🔔 You Won! 🔔</h2>
+            <h2 id="bell-title" style="margin-bottom:8px;"></h2>
             <p id="bell-msg" style="color:#cbd5e1;font-size:1.2rem;font-weight:bold;margin-bottom:12px;"></p>
             <img id="bell-img" alt="Hillcrest bell" style="max-width:100%;max-height:50vh;border-radius:10px;border:2px solid #f0ad4e;">
             <div style="margin-top:15px;">
                 <button class="btn btn-success" onclick="document.getElementById('bell-modal').classList.remove('active')">Continue</button>
             </div>
+            <img id="bell-logo" alt="Hillcrest High School logo" style="display:block;margin:18px auto 0;max-width:100%;max-height:110px;object-fit:contain;">
         </div>`;
         document.body.appendChild(m);
     }
-    
+
+    // Heading is set every time (the modal is reused between runs)
+    const title = document.getElementById('bell-title');
+    if (negative) {
+        title.textContent = ' You Won! ';
+        title.style.color = '#f04e4e';
+    } else {
+        title.textContent = '🔔 You Won! 🔔';
+        title.style.color = '#f0ad4e';
+    }
+
     // Updated end message:
-    document.getElementById('bell-msg').textContent =
+    if (negative) {
+        document.getElementById('bell-msg').textContent =
+        `Welcome to Hillcrest High School! ${playerName}, you completed every Hillcrest route and beat the bell. However, your pride score is negative. Please try again to improve your score!`;
+    } else {
+        document.getElementById('bell-msg').textContent =
         `Welcome to Hillcrest High School! ${playerName}, you completed every Hillcrest route and beat the bell. Well done!`;
-    
+    }
+
     const img = document.getElementById('bell-img');
     img.style.display = '';
     img.onerror = () => { img.style.display = 'none'; };
     img.src = getGitHubRawUrl(BELL_IMAGE);
+    const logo = document.getElementById('bell-logo');
+    logo.style.display = 'block';
+    loadImgWithFallback(logo, LOGO_IMAGE, () => { logo.style.display = 'none'; });
     m.classList.add('active');
-    playSound('success');
+    playSound(hasPositivePoints() ? 'success' : 'sad');
 }
-
-const _endGame = window.endGame;
-window.endGame = function (victory, message) {
-    _endGame(victory, message);
-    if (!victory) return;
-    const lvl = levels[currentLevelIndex];
-    const defaultIds = defaultLevels.map(l => l.id);
-    if (!lvl || !defaultIds.includes(lvl.id)) return;
-
-    let done = [];
-    try { done = JSON.parse(localStorage.getItem('hhs_completed_defaults') || '[]'); } catch (e) { }
-    if (!done.includes(lvl.id)) done.push(lvl.id);
-
-    if (defaultIds.every(id => done.includes(id))) {
-        localStorage.removeItem('hhs_completed_defaults'); // reset so it can be won again
-        showBellWin();
-    } else {
-        localStorage.setItem('hhs_completed_defaults', JSON.stringify(done));
-    }
-};
 
 
 /* ---------- 7. Robust photo loading (relative path -> GitHub raw -> jsDelivr) ---------- */

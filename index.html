@@ -12,7 +12,7 @@
     <button id="reset-btn" class="reset-btn" onclick="resetGame()">🔄 Reset</button>
     <header>
         <h1>Hillcrest High School</h1>
-        <p>Maze Runner: Catch the Mascot (Interactive Edition)</p>
+        <p>Maze Runner: Catch the Mascot</p>
     </header>
 
     <div class="container">
@@ -22,8 +22,8 @@
             <h2 style="margin-bottom: 15px; text-align: center; color: #38bdf8;">Main Menu</h2>
             <div style="display: flex; flex-direction: column; gap: 12px; max-width: 350px; margin: 0 auto;">
                 <button class="btn btn-success" onclick="goToScreen('screen-character')">🎮 Play Game</button>
-                <button class="btn" onclick="openLevelSelectForPlay()">🗺️ Select Level / Route</button>
-                <button class="btn btn-warning" onclick="openLevelEditorMenu()">🛠️ Map & Persona Editor</button>
+                <button id="menu-select-level-btn" class="btn teacher-only" onclick="openLevelSelectForPlay()">🗺️ Select Level / Route</button>
+                <button id="menu-editor-btn" class="btn btn-warning teacher-only" onclick="openLevelEditorMenu()">🛠️ Map & Persona Editor</button>
                 <button class="btn btn-purple" onclick="openSettingsModal()">⚙️ GitHub & Staff Settings</button>
                 <button class="btn" onclick="goToScreen('screen-leaderboard')">🏆 High Scores</button>
             </div>
@@ -106,15 +106,17 @@
                 <h3>Score Breakdown:</h3>
                 <table>
                     <tr><td>Learner Name:</td><td id="res-name">-</td></tr>
+                    <tr><td>School:</td><td id="res-school">-</td></tr>
+                    <tr><td>Grade:</td><td id="res-grade">-</td></tr>
                     <tr><td>Character:</td><td id="res-char">-</td></tr>
                     <tr><td>Pride Points (Actions & Greetings):</td><td id="res-pride" style="color: #4ade80;">0</td></tr>
                     <tr><td>Minus Points (Infractions):</td><td id="res-minus" style="color: #f87171;">0</td></tr>
                     <tr><td>Time Bonus:</td><td id="res-time">0</td></tr>
-                    <tr><th style="font-size: 1.1rem;">Final Score:</th><th id="res-total" style="font-size: 1.1rem; color: #38bdf8;">0</th></tr>
+                    <tr><th id="res-total-label" style="font-size: 1.1rem;">Final Score:</th><th id="res-total" style="font-size: 1.1rem; color: #38bdf8;">0</th></tr>
                 </table>
             </div>
             <div style="text-align: center;">
-                <button class="btn btn-success" onclick="saveScoreAndReturn()">Save Score & Menu</button>
+                <button id="victory-action-btn" class="btn btn-success" onclick="victoryButtonClick()">Save Score & Menu</button>
             </div>
         </div>
 
@@ -196,13 +198,15 @@
                         <tr>
                             <th>Rank</th>
                             <th>Name</th>
+                            <th>School</th>
+                            <th>Grade</th>
                             <th>Character</th>
                             <th>Pride Pts</th>
                             <th>Score</th>
                         </tr>
                     </thead>
                     <tbody id="leaderboard-tbody">
-                        <tr><td colspan="5" style="text-align: center; color: #94a3b8;">No scores recorded yet. Play a level!</td></tr>
+                        <tr><td colspan="7" style="text-align: center; color: #94a3b8;">No scores recorded yet. Play a level!</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -280,6 +284,13 @@
                 <input type="text" id="cfg-folder" class="form-control" value="staff-photos">
             </div>
             <div class="form-group">
+                <label>Teacher Mode (1 = show Level Editor &amp; Select Level, 0 = hide them)</label>
+                <select id="cfg-teacher" class="form-control">
+                    <option value="0">0 - Off (learner mode)</option>
+                    <option value="1">1 - On (teacher mode)</option>
+                </select>
+            </div>
+            <div class="form-group">
                 <label>Configured Staff Photos (Comma-Separated Filenames)</label>
                 <input type="text" id="cfg-files" class="form-control" value="HB.webp, teacher1.png, teacher2.jpg, slt_member.webp">
             </div>
@@ -321,10 +332,14 @@
     <!-- MODAL: PLAYER NAME ENTRY -->
     <div id="name-modal" class="modal-overlay">
         <div class="modal-content" style="max-width: 400px; text-align: center;">
-            <h3 style="margin-bottom: 15px; color: #38bdf8;">Enter Your Name / Grade</h3>
+            <h3 style="margin-bottom: 15px; color: #38bdf8;">Enter Your Name, Grade and School</h3>
             <div class="form-group" style="text-align: left;">
                 <label>Learner Name</label>
-                <input type="text" id="player-name-input" class="form-control" value="Alex Smith (Grade 10)">
+                <input type="text" id="player-name-input" class="form-control" value="Alex Smith">
+                <label>Grade</label>
+                <input type="text" id="player-grade-input" class="form-control" value="7">
+                <label>School</label>
+                <input type="text" id="player-school-input" class="form-control" value="Hillcrest Primary School">
             </div>
             <button class="btn btn-success" style="width: 100%; margin-top: 10px;" onclick="confirmPlayerName()">Start Game</button>
         </div>
