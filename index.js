@@ -281,7 +281,7 @@ let defaultLevels = [
             [1, 0, 0, 0, 0, 9, 1, 0, 4, 0, 12, 0, 1, 0, 1, 0, 0, 0, 0, 12, 0, 0, 0, 0, 0, 0, 0, 0, 5, 1],
             [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
         ],
-        timeLimit: 90,
+        timeLimit: 70,
         personas: {
             "6_11": {
                 "name": "Grade Controllers",
@@ -376,6 +376,135 @@ let defaultLevels = [
                     {
                         "text": "Sorry I have to rush to class can't talk.",
                         "points": -8
+                    }
+                ]
+            }
+        }
+    },
+        {
+        id: "a_block_middle_floor",
+        name: "A Block Middle Floor",
+        description: "Corridor challenge",
+        cols: 30,
+        rows: 10,
+        patrolSpeed: 1,
+        speedAdvantage: 1,
+        characterSpeeds: {"soccer":1.2},
+        grid: [
+            [1, 1, 1, 8, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 8, 1, 1, 1],
+            [1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1],
+            [1, 1, 0, 1, 0, 1, 1, 9, 10, 0, 0, 1, 1, 0, 0, 12, 0, 0, 1, 0, 0, 0, 4, 1, 1, 6, 0, 0, 1, 1],
+            [1, 0, 10, 1, 0, 6, 1, 12, 13, 1, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 11, 1, 1, 7, 1],
+            [1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1],
+            [1, 0, 0, 11, 1, 0, 0, 0, 1, 1, 0, 1, 6, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1],
+            [1, 0, 1, 0, 1, 0, 1, 0, 9, 1, 0, 1, 0, 1, 0, 1, 0, 1, 10, 1, 0, 1, 0, 0, 0, 1, 0, 1, 1, 1],
+            [1, 0, 1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 4, 1, 0, 6, 1, 1, 1, 0, 1, 0, 1, 0, 1],
+            [1, 13, 1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 2, 0, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        ],
+        timeLimit: 60,
+        personas: {
+            "7_20": {
+                "name": "Rylan Leask",
+                "role": "slt",
+                "portrait": "👩‍🏫",
+                "photo": "SLT/rylan-leask_deputy_head_boy.JPG",
+                "prompt": "Good morning why are you not at break?",
+                "responses": [
+                    {
+                        "text": "I need to ask my grade controllers about something.",
+                        "points": 15
+                    },
+                    {
+                        "text": "(Ignore)",
+                        "points": -10
+                    },
+                    {
+                        "text": "I don't feel like being at break.",
+                        "points": -5
+                    },
+                    {
+                        "text": "I just need to ask a teacher something.",
+                        "points": 8
+                    }
+                ]
+            },
+            "3_5": {
+                "name": "Teachers",
+                "role": "teacher",
+                "portrait": "👨‍🏫",
+                "photo": "Teachers/Woodrow.JPG",
+                "prompt": "Good morning!",
+                "responses": [
+                    {
+                        "text": "Good morning, ma'ams hope you are having a good day!",
+                        "points": 20
+                    },
+                    {
+                        "text": "(Ignore)",
+                        "points": -10
+                    },
+                    {
+                        "text": "Hello!",
+                        "points": 8
+                    },
+                    {
+                        "text": "(Walk away)",
+                        "points": -15
+                    }
+                ]
+            },
+            "2_25": {
+                "name": "Teacher",
+                "role": "teacher",
+                "portrait": "👨‍🏫",
+                "photo": "Teachers/ms_zulu_commerce.JPG",
+                "prompt": "Good morning how are you?",
+                "responses": [
+                    {
+                        "text": "Good morning, Miss Zulu!  I am doing good and you?",
+                        "points": 20
+                    },
+                    {
+                        "text": "(Ignore)",
+                        "points": -10
+                    },
+                    {
+                        "text": "(Run Away)",
+                        "points": -20
+                    },
+                    {
+                        "text": "Good morning Miss Zulu! I am doing good.",
+                        "points": 10
+                    },
+                    {
+                        "text": "Good Morning Miss Zulu!",
+                        "points": 5
+                    }
+                ]
+            },
+            "5_12": {
+                "name": "Ziyanda Mabhida",
+                "role": "slt",
+                "portrait": "👩‍🏫",
+                "photo": "SLT/ziyanda_mabhida_deputy_head_girl.JPG",
+                "prompt": "Good morning! Where is your blazer?",
+                "responses": [
+                    {
+                        "text": "Good morning! I just had it in my bag, here it is.",
+                        "points": 15
+                    },
+                    {
+                        "text": "(Ignore)",
+                        "points": -15
+                    },
+                    {
+                        "text": "Sorry I forgot it at home I will bring it to school tomorrow.",
+                        "points": 10
+                    },
+                    {
+                        "text": "Sorry I do not have it right now.",
+                        "points": 0
                     }
                 ]
             }
