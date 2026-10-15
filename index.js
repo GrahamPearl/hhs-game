@@ -305,7 +305,7 @@ let defaultLevels = [
                 ]
             },
             "4_2": {
-                "name": "Luke Whittle",
+                "name": "Luke Whittle (Head Boy)",
                 "role": "slt",
                 "portrait": "👩‍🏫",
                 "photo": "SLT/luke_whittle_head_boy.JPG",
@@ -330,7 +330,7 @@ let defaultLevels = [
                 ]
             },
             "6_25": {
-                "name": "Mr Ndebele",
+                "name": "Mr Ndebele (Deputy Principal)",
                 "role": "teacher",
                 "portrait": "👨‍🏫",
                 "photo": "Teachers/mr_ndebele_deputy_principal.JPG",
@@ -355,7 +355,7 @@ let defaultLevels = [
                 ]
             },
             "1_18": {
-                "name": "Tamuka Chovuchovu",
+                "name": "Tamuka Chovuchovu (Deputy Head Boy)",
                 "role": "slt",
                 "portrait": "👩‍🏫",
                 "photo": "SLT/tamuka_chovuchovu_deputy_head_boy.JPG",
@@ -405,7 +405,7 @@ let defaultLevels = [
         timeLimit: 70,
         personas: {
             "7_20": {
-                "name": "Rylan Leask",
+                "name": "Rylan Leask (Deputy Head Boy)",
                 "role": "slt",
                 "portrait": "👩‍🏫",
                 "photo": "SLT/rylan-leask_deputy_head_boy.JPG",
@@ -455,7 +455,7 @@ let defaultLevels = [
                 ]
             },
             "2_25": {
-                "name": "Teacher",
+                "name": "Ms Zulu (Commerce Teacher)",
                 "role": "teacher",
                 "portrait": "👨‍🏫",
                 "photo": "Teachers/ms_zulu_commerce.JPG",
@@ -484,7 +484,7 @@ let defaultLevels = [
                 ]
             },
             "5_12": {
-                "name": "Ziyanda Mabhida",
+                "name": "Ziyanda Mabhida (Deputy Head Girl)",
                 "role": "slt",
                 "portrait": "👩‍🏫",
                 "photo": "SLT/ziyanda_mabhida_deputy_head_girl.JPG",
@@ -534,7 +534,7 @@ let defaultLevels = [
         timeLimit: 80,
         personas: {
             "2_14": {
-                "name": "Mr Moore",
+                "name": "Mr Moore (History Teacher)",
                 "role": "teacher",
                 "portrait": "👨‍🏫",
                 "photo": "Teachers/mr_moore_history.JPG",
@@ -555,7 +555,7 @@ let defaultLevels = [
                 ]
             },
             "2_1": {
-                "name": "Teacher",
+                "name": "Mr Joseph (IT Teacher)",
                 "role": "teacher",
                 "portrait": "👨‍🏫",
                 "photo": "Teachers/mr_joseph_it.JPG",
@@ -580,7 +580,7 @@ let defaultLevels = [
                 ]
             },
             "6_22": {
-                "name": "Isabella te Brugge",
+                "name": "Isabella te Brugge (Deputy Head Girl)",
                 "role": "slt",
                 "portrait": "👩‍🏫",
                 "photo": "SLT/isabella_te_brugge_deputy_head.JPG",
@@ -605,7 +605,7 @@ let defaultLevels = [
                 ]
             },
             "7_6": {
-                "name": "Jorja Pretorius",
+                "name": "Jorja Pretorius (Head Girl)",
                 "role": "slt",
                 "portrait": "👩‍🏫",
                 "photo": "SLT/jorja_pretorius_head_girl.JPG",
@@ -630,7 +630,7 @@ let defaultLevels = [
                 ]
             }
         }
-    }
+    },
     {
         id: "b_block_bottom_floor",
         name: "B Block Bottom Floor",
@@ -654,7 +654,7 @@ let defaultLevels = [
         timeLimit: 65,
         personas: {
             "5_3": {
-                "name": "SLT Member",
+                "name": "Mrs Ramsern (Geography Teacher)",
                 "role": "teacher",
                 "portrait": "👩‍🏫",
                 "photo": "Teachers/mrs_ramsern_geography.JPG",
@@ -704,7 +704,7 @@ let defaultLevels = [
                 ]
             },
             "7_11": {
-                "name": "Ziyanda Mabhid",
+                "name": "Ziyanda Mabhid (Deputy Head Girl)",
                 "role": "slt",
                 "portrait": "👩‍🏫",
                 "photo": "SLT/ziyanda_mabhida_deputy_head_girl.JPG",
@@ -725,7 +725,7 @@ let defaultLevels = [
                 ]
             },
             "1_11": {
-                "name": "Luke Whittle",
+                "name": "Luke Whittle (Head Boy)",
                 "role": "slt",
                 "portrait": "👩‍🏫",
                 "photo": "SLT/luke_whittle_head_boy.JPG",
@@ -742,6 +742,403 @@ let defaultLevels = [
                     {
                         "text": "(Continue Running)",
                         "points": -15
+                    }
+                ]
+            }
+        }
+    },
+    {
+        id: "a_block_top_floor",
+        name: "A Block Top Floor",
+        description: "Corridor challenge",
+        cols: 29,
+        rows: 9,
+        patrolSpeed: 0.85,
+        speedAdvantage: 1,
+        characterSpeeds: {"drama":1.2,"learner":1.1},
+        grid: [
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 2, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 6, 0, 0, 0, 1, 0, 0, 9, 0, 0, 1, 10, 1],
+            [1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 5, 1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1],
+            [1, 11, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 12, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 0, 1, 0, 1, 12, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 0, 1, 7, 1, 0, 1],
+            [1, 6, 0, 0, 0, 0, 0, 0, 1, 0, 1, 6, 1, 0, 11, 0, 1, 0, 4, 0, 1, 13, 0, 0, 0, 0, 1, 0, 1],
+            [1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1],
+            [1, 0, 0, 0, 0, 13, 0, 0, 9, 0, 1, 0, 0, 0, 4, 0, 0, 0, 0, 0, 1, 0, 0, 6, 0, 0, 0, 8, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        ],
+        timeLimit: 75,
+        personas: {
+            "5_1": {
+                "name": "Mrs Knight (Principal)",
+                "role": "teacher",
+                "portrait": "👩‍🏫",
+                "photo": "Teachers/mrs_knight_principal.jpg",
+                "prompt": "Good morning! Where are you off to in such a hurry?",
+                "responses": [
+                    {
+                        "text": "Good morning, ma'am! I'm on my way to class.",
+                        "points": 20
+                    },
+                    {
+                        "text": "(Ignore)",
+                        "points": -10
+                    },
+                    {
+                        "text": "(Run Past)",
+                        "points": -15
+                    },
+                    {
+                        "text": "Good morning ma'am, going to class.",
+                        "points": 8
+                    }
+                ]
+            },
+            "5_11": {
+                "name": "Jorja Pretorius (Head Girl)",
+                "role": "slt",
+                "portrait": "👩‍🏫",
+                "photo": "SLT/jorja_pretorius_head_girl.JPG",
+                "prompt": "Good morning! Please make sure you look neat for assembly.",
+                "responses": [
+                    {
+                        "text": "Good morning! Thank you, I'll fix it right now.",
+                        "points": 20
+                    },
+                    {
+                        "text": "(Ignore)",
+                        "points": -10
+                    },
+                    {
+                        "text": "It's fine.",
+                        "points": -15
+                    },
+                    {
+                        "text": "Sorry, I'll sort it out soon.",
+                        "points": 5
+                    }
+                ]
+            },
+            "1_16": {
+                "name": "Mr Joseph (IT Teacher)",
+                "role": "teacher",
+                "portrait": "👨‍🏫",
+                "photo": "Teachers/mr_joseph_it.JPG",
+                "prompt": "Good morning, are you ready for class?",
+                "responses": [
+                    {
+                        "text": "Good morning, Sir! Yes, I am ready.",
+                        "points": 20
+                    },
+                    {
+                        "text": "(Ignore)",
+                        "points": -10
+                    },
+                    {
+                        "text": "I will be later.",
+                        "points": -5
+                    },
+                    {
+                        "text": "Good morning Sir, I just forgot my calculator at home.",
+                        "points": 8
+                    }
+                ]
+            },
+            "7_23": {
+                "name": "Tamuka Chovuchovu (Deputy Head Boy)",
+                "role": "slt",
+                "portrait": "👩‍🏫",
+                "photo": "SLT/tamuka_chovuchovu_deputy_head_boy.JPG",
+                "prompt": "Good morning! Please make sure you pick up litter if you see any.",
+                "responses": [
+                    {
+                        "text": "Good morning! Yes Sir, I will pick up some now.",
+                        "points": 20
+                    },
+                    {
+                        "text": "(Ignore)",
+                        "points": -12
+                    },
+                    {
+                        "text": "Not my problem.",
+                        "points": -18
+                    },
+                    {
+                        "text": "Good morning! I will.",
+                        "points": 10
+                    }
+                ]
+            }
+        }
+    },
+    {
+        id: "c_block_bottom_floor",
+        name: "C Block Bottom Floor",
+        description: "Corridor challenge",
+        cols: 29,
+        rows: 9,
+        patrolSpeed: 0.75,
+        speedAdvantage: 1.1,
+        characterSpeeds: {"rugby":1.2,"soccer":1.2,"netball":1.2},
+        grid: [
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 2, 0, 0, 0, 11, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 12, 0, 0, 1, 4, 13, 0, 6, 0, 0, 0, 1],
+            [1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 1, 6, 1, 0, 1, 1, 1, 0, 1, 1, 1],
+            [1, 0, 0, 0, 0, 0, 1, 5, 1, 0, 6, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 5, 1],
+            [1, 1, 1, 11, 1, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 6, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1],
+            [1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 9, 0, 7, 0, 0, 1, 0, 0, 0, 1],
+            [1, 0, 1, 1, 1, 1, 1, 0, 1, 4, 1, 1, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1],
+            [1, 0, 0, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 13, 0, 0, 0, 0, 0, 0, 0, 0, 0, 12, 0, 1, 8, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        ],
+        timeLimit: 75,
+        personas: {
+            "3_10": {
+                "name": "Mr Moore (History Teacher)",
+                "role": "teacher",
+                "portrait": "👨‍🏫",
+                "photo": "Teachers/mr_moore_history.JPG",
+                "prompt": "Good afternoon! Which class are you heading to?",
+                "responses": [
+                    {
+                        "text": "Good afternoon, Mr. Moore! I'm going to my next lesson.",
+                        "points": 20
+                    },
+                    {
+                        "text": "(Ignore)",
+                        "points": -10
+                    },
+                    {
+                        "text": "I'm not sure.",
+                        "points": -10
+                    },
+                    {
+                        "text": "Afternoon Sir, going to class.",
+                        "points": 8
+                    }
+                ]
+            },
+            "4_15": {
+                "name": "Rylan Leask (Deputy Head Boy)",
+                "role": "slt",
+                "portrait": "👩‍🏫",
+                "photo": "SLT/rylan-leask_deputy_head_boy.JPG",
+                "prompt": "Good afternoon! Please don't run in the corridor.",
+                "responses": [
+                    {
+                        "text": "Good afternoon! Thanks for the reminder, I'll make sure to walk.",
+                        "points": 20
+                    },
+                    {
+                        "text": "(Ignore)",
+                        "points": -10
+                    },
+                    {
+                        "text": "(Keep Running)",
+                        "points": -15
+                    },
+                    {
+                        "text": "Okay, sorry.",
+                        "points": 5
+                    }
+                ]
+            },
+            "2_19": {
+                "name": "Ms Zulu (Commerce Teacher)",
+                "role": "teacher",
+                "portrait": "👩‍🏫",
+                "photo": "Teachers/ms_zulu_commerce.JPG",
+                "prompt": "Good afternoon! Have you finished your homework?",
+                "responses": [
+                    {
+                        "text": "Good afternoon, Miss Zulu! Yes, it's in my bag.",
+                        "points": 20
+                    },
+                    {
+                        "text": "(Ignore)",
+                        "points": -10
+                    },
+                    {
+                        "text": "I'll do it tonight.",
+                        "points": -5
+                    },
+                    {
+                        "text": "Good afternoon, I'm nearly finished and will hand it in tomorrow.",
+                        "points": 8
+                    }
+                ]
+            },
+            "1_24": {
+                "name": "Ziyanda Mabhida (Deputy Head Girl)",
+                "role": "slt",
+                "portrait": "👩‍🏫",
+                "photo": "SLT/ziyanda_mabhida_deputy_head_girl.JPG",
+                "prompt": "Good afternoon! How is your day going so far?",
+                "responses": [
+                    {
+                        "text": "Good afternoon, ma'am! It's going well, and yours?",
+                        "points": 20
+                    },
+                    {
+                        "text": "(Ignore)",
+                        "points": -10
+                    },
+                    {
+                        "text": "Fine.",
+                        "points": 0
+                    },
+                    {
+                        "text": "Great, thank you!",
+                        "points": 8
+                    }
+                ]
+            }
+        }
+    },
+    {
+        id: "fish_pond_quad",
+        name: "Fish Pond Quad",
+        description: "Open-air challenge",
+        cols: 29,
+        rows: 9,
+        patrolSpeed: 0.9,
+        speedAdvantage: 1,
+        characterSpeeds: {"library":1.2,"drama":1.1},
+        grid: [
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 2, 0, 0, 0, 0, 1, 0, 4, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 0, 6, 1, 0, 1, 0, 1, 0, 1],
+            [1, 0, 0, 0, 0, 0, 0, 6, 1, 6, 0, 0, 0, 0, 1, 0, 6, 0, 1, 0, 0, 0, 5, 0, 0, 0, 0, 11, 1],
+            [1, 1, 1, 0, 1, 0, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 12, 1, 0, 7, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 8, 1],
+            [1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 13, 1, 0, 1],
+            [1, 0, 0, 7, 0, 1, 0, 0, 0, 0, 0, 0, 9, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 6, 0, 5, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        ],
+        timeLimit: 80,
+        personas: {
+            "3_7": {
+                "name": "Mr Ndebele (Deputy Principal)",
+                "role": "teacher",
+                "portrait": "👨‍🏫",
+                "photo": "Teachers/mr_ndebele_deputy_principal.JPG",
+                "prompt": "Good morning! The bell has rung, shouldn't you be in class?",
+                "responses": [
+                    {
+                        "text": "Good morning, Mr. Ndebele! I'm heading there right now.",
+                        "points": 20
+                    },
+                    {
+                        "text": "(Ignore)",
+                        "points": -10
+                    },
+                    {
+                        "text": "Cannot hear you!",
+                        "points": -20
+                    },
+                    {
+                        "text": "Going to class, Sir.",
+                        "points": 5
+                    }
+                ]
+            },
+            "3_9": {
+                "name": "Mrs Ramsern (Geography Teacher)",
+                "role": "teacher",
+                "portrait": "👩‍🏫",
+                "photo": "Teachers/mrs_ramsern_geography.JPG",
+                "prompt": "Good morning! Please make sure you put your rubbish in the bin.",
+                "responses": [
+                    {
+                        "text": "Good morning, ma'am! Of course, I'll use the bin.",
+                        "points": 20
+                    },
+                    {
+                        "text": "(Ignore)",
+                        "points": -10
+                    },
+                    {
+                        "text": "(Walk Away)",
+                        "points": -15
+                    },
+                    {
+                        "text": "Sorry ma'am, I will.",
+                        "points": 8
+                    }
+                ]
+            },
+            "3_16": {
+                "name": "Luke Whittle (Head Boy)",
+                "role": "slt",
+                "portrait": "👩‍🏫",
+                "photo": "SLT/luke_whittle_head_boy.JPG",
+                "prompt": "Good morning! Do you have your school bag and blazer today?",
+                "responses": [
+                    {
+                        "text": "Good morning! Yes, I have everything I need.",
+                        "points": 20
+                    },
+                    {
+                        "text": "(Ignore)",
+                        "points": -10
+                    },
+                    {
+                        "text": "Not really.",
+                        "points": -8
+                    },
+                    {
+                        "text": "Good morning, I left my blazer at home but will bring it tomorrow.",
+                        "points": 8
+                    }
+                ]
+            },
+            "2_21": {
+                "name": "Isabella te Brugge (Deputy Head Girl)",
+                "role": "slt",
+                "portrait": "👩‍🏫",
+                "photo": "SLT/isabella_te_brugge_deputy_head.JPG",
+                "prompt": "Good morning! Are you excited to be a Hillcrest High learner?",
+                "responses": [
+                    {
+                        "text": "Good morning! Yes, I'm very proud to wear the uniform.",
+                        "points": 20
+                    },
+                    {
+                        "text": "(Ignore)",
+                        "points": -10
+                    },
+                    {
+                        "text": "(Run Away)",
+                        "points": -15
+                    },
+                    {
+                        "text": "Good morning, yes I am.",
+                        "points": 8
+                    }
+                ]
+            },
+            "7_25": {
+                "name": "Grade Controllers",
+                "role": "teacher",
+                "portrait": "👨‍🏫",
+                "photo": "Teachers/grade_controllers_1.JPG",
+                "prompt": "Good morning! Do you have a pass to be outside right now?",
+                "responses": [
+                    {
+                        "text": "Good morning, Sir and Ma'am! Yes, here is my pass.",
+                        "points": 20
+                    },
+                    {
+                        "text": "(Ignore)",
+                        "points": -15
+                    },
+                    {
+                        "text": "What pass?",
+                        "points": -8
+                    },
+                    {
+                        "text": "Good morning, I'm just going to class.",
+                        "points": 5
                     }
                 ]
             }
