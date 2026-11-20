@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maze Runner: Catch the Mascot - Hillcrest High School</title>
+    <link rel="stylesheet" href="index.css">
+</head>
+
+<body>
+    <button id="reset-btn" class="reset-btn" onclick="resetGame()">🔄 Reset</button>
+    <header>
+        <h1>Hillcrest High School</h1>
+        <p>Maze Runner: Catch the Mascot (Interactive Edition)</p>
+    </header>
+
+    <div class="container">
+
+        <!-- SCREEN 1: MAIN MENU -->
+        <div id="screen-menu" class="screen active">
+            <h2 style="margin-bottom: 15px; text-align: center; color: #38bdf8;">Main Menu</h2>
+            <div style="display: flex; flex-direction: column; gap: 12px; max-width: 350px; margin: 0 auto;">
+                <button class="btn btn-success" onclick="goToScreen('screen-character')">🎮 Play Game</button>
+                <button id="menu-select-level-btn" class="btn teacher-only" onclick="openLevelSelectForPlay()">🗺️ Select Level / Route</button>
+                <button id="menu-editor-btn" class="btn btn-warning teacher-only" onclick="openLevelEditorMenu()">🛠️ Map & Persona Editor</button>
+                <button class="btn btn-purple" onclick="openSettingsModal()">⚙️ GitHub & Staff Settings</button>
+                <button class="btn" onclick="goToScreen('screen-leaderboard')">🏆 High Scores</button>
+            </div>
+        </div>
+
+        <!-- SCREEN 2: CHARACTER SELECT -->
+        <div id="screen-character" class="screen">
+            <h2 style="margin-bottom: 15px; text-align: center;">Choose Your HHS Character</h2>
+            <div class="menu-grid" id="character-grid">
+                <div class="card selected" onclick="selectCharacter('rugby', this)">
+                    <div style="font-size: 3rem;">🏉</div>
+                    <h3>Rugby Player</h3>
+                    <p style="font-size: 0.8rem; color: #94a3b8;">HHS Rugby Kit</p>
+                </div>
+                <div class="card" onclick="selectCharacter('soccer', this)">
+                    <div style="font-size: 3rem;">⚽</div>
+                    <h3>Soccer Player</h3>
+                    <p style="font-size: 0.8rem; color: #94a3b8;">HHS Soccer Kit</p>
+                </div>
+                <div class="card" onclick="selectCharacter('netball', this)">
+                    <div style="font-size: 3rem;">🏐</div>
+                    <h3>Netball Player</h3>
+                    <p style="font-size: 0.8rem; color: #94a3b8;">HHS Netball Kit</p>
+                </div>
+                <div class="card" onclick="selectCharacter('library', this)">
+                    <div style="font-size: 3rem;">📚</div>
+                    <h3>Library Assistant</h3>
+                    <p style="font-size: 0.8rem; color: #94a3b8;">Library Specialist</p>
+                </div>
+                <div class="card" onclick="selectCharacter('drama', this)">
+                    <div style="font-size: 3rem;">🎤</div>
+                    <h3>Drama Student</h3>
+                    <p style="font-size: 0.8rem; color: #94a3b8;">With Microphone</p>
+                </div>
+                <div class="card" onclick="selectCharacter('learner', this)">
+                    <div style="font-size: 3rem;">🎒</div>
+                    <h3>Basic Learner</h3>
+                    <p style="font-size: 0.8rem; color: #94a3b8;">Standard School Uniform</p>
+                </div>
+            </div>
+            <div style="text-align: center; margin-top: 20px;">
+                <button class="btn" onclick="goToScreen('screen-menu')">Back</button>
+                <button class="btn btn-success" onclick="startSelectedGame()">Continue to Level</button>
+            </div>
+        </div>
+
+        <!-- SCREEN 3: LEVEL SELECT FOR PLAY -->
+        <div id="screen-level-select" class="screen">
+            <h2 style="margin-bottom: 15px; text-align: center;">Select Route / Level</h2>
+            <div class="menu-grid" id="play-level-grid"></div>
+            <div style="text-align: center; margin-top: 20px;">
+                <button class="btn" onclick="goToScreen('screen-menu')">Back</button>
+            </div>
+        </div>
+
+        <!-- SCREEN 4: GAME SCREEN -->
+        <div id="screen-game" class="screen">
+            <h2 id="hud-level-name" style="text-align: center; color: #38bdf8; margin-bottom: 10px; font-size: 1.4rem;"></h2>
+            <div class="game-hud">
+                <div class="hud-item">👤 <span id="hud-char">Player</span></div>
+                <div class="hud-item">⭐ Pride Points: <span id="hud-score" style="color: #4ade80;">0</span></div>
+                <div class="hud-item">⏱️ Time: <span id="hud-time">00:00</span></div>
+                <div class="hud-item teacher-only" style="font-size: 0.85rem; color: #cbd5e1;">Patrol Speed: <span id="hud-patrol-speed" style="color: #38bdf8;">1.0s</span></div>
+                <!-- <button class="btn btn-danger" style="padding: 4px 10px; font-size: 0.8rem;" onclick="quitGame()">Quit</button> -->
+            </div>
+            <div class="canvas-container">
+                <div id="special-popup">⭐ Special Item!</div>
+                <canvas id="gameCanvas" width="800" height="500"></canvas>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px; flex-wrap: wrap; gap: 8px;">
+                <p style="font-size: 0.85rem; color: #94a3b8;">Use <b>Arrow Keys</b> or <b>WASD</b> to walk. Teachers roam the maze and trigger chat on overlap!</p>
+                <button class="btn btn-warning" id="interact-btn" onclick="triggerInteraction()" style="display: none;">Interact (SPACE)</button>
+            </div>
+        </div>
+
+        <!-- SCREEN 5: GAME OVER / VICTORY -->
+        <div id="screen-victory" class="screen">
+            <h2 id="victory-title" style="text-align: center; color: #4ade80; margin-bottom: 10px;">Level Completed!</h2>
+            <p id="victory-subtitle" style="text-align: center; color: #94a3b8; margin-bottom: 20px;">You reached the HHS Kingfisher mascot flag.</p>
+            <div style="background: #0f172a; padding: 15px; border-radius: 8px; border: 1px solid #334155; margin-bottom: 20px;">
+                <h3>Score Breakdown:</h3>
+                <table>
+                    <tr><td>Learner Name:</td><td id="res-name">-</td></tr>
+                    <tr><td>School:</td><td id="res-school">-</td></tr>
+                    <tr><td>Grade:</td><td id="res-grade">-</td></tr>
+                    <tr><td>Character:</td><td id="res-char">-</td></tr>
+                    <tr><td>Pride Points (Actions & Greetings):</td><td id="res-pride" style="color: #4ade80;">0</td></tr>
+                    <tr><td>Minus Points (Infractions):</td><td id="res-minus" style="color: #f87171;">0</td></tr>
+                    <tr><td>Time Bonus:</td><td id="res-time">0</td></tr>
+                    <tr><th id="res-total-label" style="font-size: 1.1rem;">Final Score:</th><th id="res-total" style="font-size: 1.1rem; color: #38bdf8;">0</th></tr>
+                </table>
+            </div>
+            <div style="text-align: center;">
+                <button id="victory-action-btn" class="btn btn-success" onclick="victoryButtonClick()">Save Score & Menu</button>
+            </div>
+        </div>
+
+        <!-- SCREEN 6: MAP & PERSONA EDITOR -->
+        <div id="screen-editor" class="screen">
+            <div class="flex-between" style="margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
+                <h2>Level & Persona Editor</h2>
+                <div class="flex-row" style="flex-wrap: wrap;">
+                    <button class="btn btn-success" onclick="saveCurrentLevel()">💾 Save Level</button>
+                    <button class="btn btn-warning" onclick="exportLevelJSON()">📤 Export JSON</button>
+                    <button class="btn btn-purple" onclick="exportLevelAsStarterCode()">📋 Export Starter Code</button>
+                    <label class="btn" style="cursor: pointer; margin:0;">📥 Import <input type="file" id="importFile" style="display: none;" onchange="importLevelJSON(event)"></label>
+                    <button class="btn btn-danger" onclick="goToScreen('screen-menu')">Exit</button>
+                </div>
+            </div>
+
+            <!-- Level Selector & Meta -->
+            <div style="background: #0f172a; padding: 12px; border-radius: 8px; border: 1px solid #334155; margin-bottom: 15px; display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; align-items: end;">
+                <div class="form-group" style="margin:0;">
+                    <label>Select Level to Edit</label>
+                    <select id="editor-level-select" class="form-control" onchange="loadLevelIntoEditor(this.value)">
+                        <option value="NEW">+ Create New Level</option>
+                    </select>
+                </div>
+                <div class="form-group" style="margin:0;">
+                    <label>Level Name</label>
+                    <input type="text" id="edit-level-name" class="form-control" value="Custom Route">
+                </div>
+                <div class="form-group" style="margin:0;">
+                    <label>Route Description</label>
+                    <input type="text" id="edit-level-desc" class="form-control" value="Start to Finish">
+                </div>
+                <div class="form-group" style="margin:0;">
+                    <label>Time Limit (s)</label>
+                    <input type="number" id="edit-level-time" class="form-control" value="90">
+                </div>
+                <div class="form-group" style="margin:0;">
+                    <label>Teacher Patrol Interval (s)</label>
+                    <input type="number" step="0.1" min="0.2" max="5.0" id="edit-patrol-speed" class="form-control" value="1.0">
+                </div>
+                <div class="form-group" style="margin:0;">
+                    <label>Player Speed Boost / Advantage Multiplier</label>
+                    <input type="number" step="0.1" min="0.5" max="3.0" id="edit-speed-advantage" class="form-control" value="1.0">
+                </div>
+            </div>
+
+            <div class="editor-layout">
+                <div class="palette">
+                    <h3 style="font-size: 0.95rem; margin-bottom: 10px; color: #38bdf8;">Tile & Entity Palette</h3>
+                    <div id="palette-items"></div>
+                    <hr style="border-color: #334155; margin: 15px 0;">
+                    <div class="form-group">
+                        <label>Grid Size</label>
+                        <select id="edit-grid-size" class="form-control" onchange="changeGridSize()">
+                            <option value="16">16 x 10</option>
+                            <option value="20">20 x 12</option>
+                            <option value="24">24 x 15</option>
+                            <option value="30" selected>30 x 10</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-warning" style="width:100%; margin-top:10px;" onclick="clearMapGrid()">Clear Map</button>
+                </div>
+
+                <div style="background: #0f172a; padding: 15px; border-radius: 8px; border: 1px solid #334155; display: flex; flex-direction: column; align-items: center;">
+                    <div style="position: relative; width: 100%; overflow-x: auto;" tabindex="0" id="editor-canvas-wrapper">
+                        <canvas id="editorCanvas" width="750" height="300" style="border: 2px solid #334155; cursor: crosshair; display: block; margin: 0 auto;" onclick="canvasClick(event)"></canvas>
+                    </div>
+                    <p style="font-size: 0.8rem; color: #94a3b8; margin-top: 10px; text-align: center;">Click grid to place tile. Click placed <b>Teacher / SLT</b> or press <b>SPACE</b> on tile to edit Persona & Dialogue.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- SCREEN 7: LEADERBOARD -->
+        <div id="screen-leaderboard" class="screen">
+            <h2 style="margin-bottom: 15px; text-align: center; color: #38bdf8;">🏆 Hillcrest High High Scores</h2>
+            <div style="background: #0f172a; padding: 15px; border-radius: 8px; border: 1px solid #334155; overflow-x: auto;">
+                <table id="leaderboard-table">
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>Name</th>
+                            <th>School</th>
+                            <th>Grade</th>
+                            <th>Character</th>
+                            <th>Pride Pts</th>
+                            <th>Score</th>
+                        </tr>
+                    </thead>
+                    <tbody id="leaderboard-tbody">
+                        <tr><td colspan="7" style="text-align: center; color: #94a3b8;">No scores recorded yet. Play a level!</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div style="text-align: center; margin-top: 20px;">
+                <button class="btn" onclick="goToScreen('screen-menu')">Back to Menu</button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- MODAL: TEACHER / SLT PERSONA & DIALOGUE EDITOR -->
+    <div id="persona-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h3 style="margin-bottom: 15px; color: #38bdf8;">Configure Teacher / SLT Persona</h3>
+            <div class="form-group">
+                <label>Name / Title</label>
+                <input type="text" id="p-name" class="form-control" value="Mr. van der Merwe">
+            </div>
+
+            <div class="form-group">
+                <label>Select Staff Photo (GitHub Hosted)</label>
+                <div style="display: flex; gap: 8px; flex-wrap: wrap; max-height: 140px; overflow-y: auto; background: #0f172a; padding: 10px; border-radius: 8px; border: 1px solid #334155; margin-bottom: 8px;" id="p-photo-gallery"></div>
+                <div class="flex-row">
+                    <input type="text" id="p-custom-filename" class="form-control" placeholder="Filename e.g. HB.webp" oninput="previewCustomPhoto(this.value)">
+                    <span style="font-size:0.75rem; color:#94a3b8; white-space:nowrap;">Custom Filename</span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Fallback Emoji / Sprite (If no photo)</label>
+                <div class="flex-row" style="gap: 10px;" id="p-portrait-list">
+                    <div class="card selected" style="padding: 5px; width: 50px; height: 50px;" onclick="selectPortrait('👨‍🏫', this)">👨‍🏫</div>
+                    <div class="card" style="padding: 5px; width: 50px; height: 50px;" onclick="selectPortrait('👩‍🏫', this)">👩‍🏫</div>
+                    <div class="card" style="padding: 5px; width: 50px; height: 50px;" onclick="selectPortrait('👔', this)">👔</div>
+                    <div class="card" style="padding: 5px; width: 50px; height: 50px;" onclick="selectPortrait('👮‍♂️', this)">👮‍♂️</div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Greeting / Dialogue Prompt</label>
+                <textarea id="p-prompt" class="form-control" rows="2">Good morning! Why are you rushing down this corridor?</textarea>
+            </div>
+
+            <h4 style="font-size: 0.9rem; margin: 15px 0 8px 0; color: #38bdf8;">Response Options & Point Allocations</h4>
+            <div id="p-responses-container"></div>
+            <button class="btn" style="font-size: 0.8rem; margin-top: 5px;" onclick="addResponseOption()">+ Add Response Option</button>
+
+            <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
+                <button class="btn btn-danger" onclick="closePersonaModal()">Cancel</button>
+                <button class="btn btn-success" onclick="savePersonaConfig()">Save Persona</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: GITHUB & STAFF SETTINGS (settings.json) -->
+    <div id="settings-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h3 style="margin-bottom: 15px; color: #38bdf8;">⚙️ GitHub & Staff Photo Settings</h3>
+            <p style="font-size: 0.85rem; color: #94a3b8; margin-bottom: 15px;">Configure your GitHub repo to host SLT & Staff photo files. Linked with <code>teachers.json</code>.</p>
+
+            <div class="form-group">
+                <label>GitHub Username / Org</label>
+                <input type="text" id="cfg-username" class="form-control" value="grahampearl">
+            </div>
+            <div class="form-group">
+                <label>Repository Name</label>
+                <input type="text" id="cfg-repo" class="form-control" value="hhs-game">
+            </div>
+            <div class="form-group">
+                <label>Branch</label>
+                <input type="text" id="cfg-branch" class="form-control" value="main">
+            </div>
+            <div class="form-group">
+                <label>Staff Photos Folder Path</label>
+                <input type="text" id="cfg-folder" class="form-control" value="staff-photos">
+            </div>
+            <div class="form-group">
+                <label>Teacher Mode (1 = show Level Editor &amp; Select Level, 0 = hide them)</label>
+                <select id="cfg-teacher" class="form-control">
+                    <option value="0">0 - Off (learner mode)</option>
+                    <option value="1">1 - On (teacher mode)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Configured Staff Photos (Comma-Separated Filenames)</label>
+                <input type="text" id="cfg-files" class="form-control" value="HB.webp, teacher1.png, teacher2.jpg, slt_member.webp">
+            </div>
+
+            <div style="background: #0f172a; padding: 10px; border-radius: 6px; border: 1px solid #334155; margin-bottom: 15px;">
+                <span style="font-size: 0.75rem; color: #38bdf8; word-break: break-all;">Raw URL Preview:<br><code id="cfg-url-preview">https://raw.githubusercontent.com/...</code></span>
+            </div>
+
+            <div class="flex-between" style="gap: 10px; flex-wrap: wrap;">
+                <div class="flex-row">
+                    <button class="btn btn-warning" style="font-size:0.85rem;" onclick="exportSettingsJSON()">📤 Export settings.json</button>
+                    <label class="btn" style="font-size:0.85rem; cursor: pointer; margin:0;">📥 Load <input type="file" id="settingsImportFile" style="display: none;" onchange="importSettingsJSON(event)"></label>
+                </div>
+                <div class="flex-row">
+                    <button class="btn btn-danger" style="font-size:0.85rem;" onclick="closeSettingsModal()">Cancel</button>
+                    <button class="btn btn-success" style="font-size:0.85rem;" onclick="saveSettingsConfig()">Save Settings</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: IN-GAME INTERACTIVE DIALOGUE -->
+    <div id="dialogue-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="dialogue-header">
+                <div id="dlg-avatar-container" style="width: 70px; height: 70px; border-radius: 50%; overflow: hidden; border: 2px solid #38bdf8; display: flex; align-items: center; justify-content: center; background: #0f172a; flex-shrink: 0;">
+                    <div id="dlg-avatar" style="font-size: 3rem;">👨‍🏫</div>
+                </div>
+                <div>
+                    <h3 id="dlg-title">Teacher Name</h3>
+                    <p style="font-size: 0.8rem; color: #94a3b8;">Hillcrest High School Staff Interaction</p>
+                </div>
+            </div>
+            <div class="dialogue-speech" id="dlg-speech">Greeting prompt text here...</div>
+            <div id="dlg-options-container"></div>
+        </div>
+    </div>
+
+    <!-- MODAL: PLAYER NAME ENTRY -->
+    <div id="name-modal" class="modal-overlay">
+        <div class="modal-content" style="max-width: 400px; text-align: center;">
+            <h3 style="margin-bottom: 15px; color: #38bdf8;">Enter Your Name, Grade and School</h3>
+            <div class="form-group" style="text-align: left;">
+                <label>Learner Name</label>
+                <input type="text" id="player-name-input" class="form-control" value="Alex Smith">
+                <label>Grade</label>
+                <input type="text" id="player-grade-input" class="form-control" value="7">
+                <label>School</label>
+                <input type="text" id="player-school-input" class="form-control" value="Hillcrest Primary School">
+            </div>
+            <button class="btn btn-success" style="width: 100%; margin-top: 10px;" onclick="confirmPlayerName()">Start Game</button>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+    <script src="index.js"></script>
+    <script src="features.js"></script>
+</body>
+
+</html>
